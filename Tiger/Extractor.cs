@@ -81,6 +81,22 @@ namespace Tiger
             return m_pkg_names;
         }
 
-        
+        /// <summary>
+        /// A method used to create a dictionary of the package ids and their respective master package names
+        /// </summary>
+        /// <returns>A dictionary of the package ids and the master package names</returns>
+        private Dictionary<uint, string> get_master_packages_dict()
+        {
+            this.log("Creating the master packages dictionary");
+            Dictionary<uint, string> m_pkg_dict = new Dictionary<uint, string>();
+
+            List<string> m_pkg_names = this.MasterPackageNames == null ? get_master_packages_names() : this.MasterPackageNames; //checking if the MasterPackageNames is null
+            foreach (string pkg_name in m_pkg_names)
+            {
+                uint pkg_id = pkg_name.Contains("_en_") ? Convert.ToUInt32(pkg_name.Split('_')[^3], 16) : Convert.ToUInt32(pkg_name.Split('_')[^2], 16);
+                m_pkg_dict.Add(pkg_id, pkg_name);
+            }
+            return new Dictionary<uint, string>();
+        }
     }
 }
