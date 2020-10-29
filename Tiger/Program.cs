@@ -8,6 +8,8 @@ namespace Tiger
         {
             Console.WriteLine("Hello World!");
             Tiger.Extractor extractor = new Tiger.Extractor("/Volumes/WinToUSB/Program Files (x86)/Steam/steamapps/common/Destiny 2/packages", true);
+
+            Tiger.Package package = extractor.package(extractor.MasterPackageNames[4]);
         }
     }
 }

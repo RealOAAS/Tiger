@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Tiger
 {
     /// <summary>
-    /// The main extractor class used to extract the packages
+    /// The main extractor class used to extract the packages. 
     /// </summary>
     public class Extractor
     {
@@ -34,21 +34,8 @@ namespace Tiger
         /// <param name="verbouse">Allows for the extractor to print to the screen</param>
         public Extractor(string packages_path, bool verbouse)
         {
-            this.verbouse = verbouse;
+            Tiger.Logger.verbouse = verbouse;
             this.PackagesPath = packages_path;
-        }
-
-        /// <summary>
-        /// A method used to log a message on the screen depending on whether the extractor is verbouse
-        /// </summary>
-        /// <param name="message"></param>
-        public void log(string message)
-        {
-            if (this.verbouse)
-            {
-                string TimeString = DateTime.Now.ToString("hh:mm:ss tt");
-                Console.WriteLine($"[{TimeString}]: {message}");
-            }
         }
 
         /// <summary>
@@ -58,13 +45,13 @@ namespace Tiger
         /// <returns>A list of strings of the master package names</returns>
         private List<string> get_master_packages_names()
         {
-            this.log("Obtaining the names of the master packages");
+            Tiger.Logger.log("Obtaining the names of the master packages");
 
             List<string> package_names = Directory.GetFiles(this.PackagesPath, "*.pkg").ToList().Select(package_name => Tiger.Utils.get_package_name_from_path(package_name)).ToList();
-            this.log($"{package_names.Count()} packages found in the packages path");
+            Tiger.Logger.log($"{package_names.Count()} packages found in the packages path");
 
             List<string> package_names_no_patch_id = package_names.Select(package_name => Tiger.Utils.remove_patch_id_from_name(package_name)).Distinct().ToList();
-            this.log($"{package_names.Count()} packages resolved into {package_names_no_patch_id.Count()} unique packages");
+            Tiger.Logger.log($"{package_names.Count()} packages resolved into {package_names_no_patch_id.Count()} unique packages");
 
             List<string> m_pkg_names = new List<string>();
             Parallel.ForEach(package_names_no_patch_id, pkg_name =>
@@ -87,7 +74,7 @@ namespace Tiger
         /// <returns>A dictionary of the package ids and the master package names</returns>
         private Dictionary<uint, string> get_master_packages_dict()
         {
-            this.log("Creating the master packages dictionary");
+            Tiger.Logger.log("Creating the master packages dictionary");
             Dictionary<uint, string> m_pkg_dict = new Dictionary<uint, string>();
 
             List<string> m_pkg_names = this.MasterPackageNames == null ? get_master_packages_names() : this.MasterPackageNames; //checking if the MasterPackageNames is null
@@ -98,5 +85,38 @@ namespace Tiger
             }
             return new Dictionary<uint, string>();
         }
+
+        /// <summary>
+        /// A factory method used to initialize a Tiger.Package using the package name
+        /// </summary>
+        /// <param name="package_name">The name of the package. Example: w64_ui_09be_3.pkg</param>
+        /// <returns>A Tiger.Package object</returns>
+        public Tiger.Package package(string package_name)
+        {
+            return new Tiger.Package(this.packages_path, package_name);
+        }
+
+        /// <summary>
+        /// A factory method used to initialize a Tiger.Package using the package_id
+        /// </summary>
+        /// <param name="package_id">The package id to the package. Example 0x9be</param>
+        /// <remarks> Using this method will initialize the Tiger.Package with the master package. To initialize with a non master package, use the other function overloads </remarks>
+        /// <returns>A Tiger.Package object</returns>
+        public Tiger.Package package(uint package_id)
+        {
+            return new Tiger.Package(this.packages_path, MasterPackageDict[package_id]);
+        }
+
+        /// <summary>
+        /// A factory method used to initialize a Tiger.Package using the package_id and patch_id
+        /// </summary>
+        /// <param name="package_id">The package id to the package. Example 0x9be</param>
+        /// <param name="patch_id">The patch id to the package. Example 3</param>
+        /// <returns>A Tiger.Package object</returns>
+        public Tiger.Package package(uint package_id, uint patch_id)
+        {
+            return new Tiger.Package(this.packages_path, $"{Tiger.Utils.remove_patch_id_from_name(MasterPackageDict[package_id])}_{patch_id}.pkg");
+        }
+
     }
 }
