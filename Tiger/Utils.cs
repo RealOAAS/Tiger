@@ -71,5 +71,25 @@ namespace Tiger
             }
             return decrypted_data;
         }
+   
+        /// <summary>
+        /// A wrapper to the oodle dll. 
+        /// </summary>
+        [DllImport(@"oo2core_3_win64.dll")]
+        private static extern int OodleLZ_Decompress(byte[] compressed_bytes, int size_of_compressed_bytes, byte[] decompressed_bytes, int size_of_decompressed_bytes, uint a, uint b, ulong c, uint d, uint e, uint f, uint g, uint h, uint i, uint threadModule);
+
+        /// <summary>
+        /// A method responsible for decompressing the entires that require decompression. 
+        /// </summary>
+        /// <returns>
+        /// A byte array (byte[]) containing the decompressed data.
+        /// </returns>
+        /// <param name="block_data">The data which we wish to decompress. Given as a byte array</param>
+        public static byte[] decompress(byte[] block_data)
+        {
+            byte[] decompressed_data = new byte[0x40000];
+            OodleLZ_Decompress(block_data, block_data.Length, decompressed_data, 262144, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3);
+            return decompressed_data;
+        }
     }
 }
