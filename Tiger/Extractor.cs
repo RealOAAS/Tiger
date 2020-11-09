@@ -205,6 +205,5 @@ namespace Tiger
             Tiger.Package package = this.package(package_id);
             return extract_entry_data(package, package.entry_table()[entry_index]);
         }
-
     }
 }

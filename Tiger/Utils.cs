@@ -34,6 +34,30 @@ namespace Tiger
         }
 
         /// <summary>
+        /// A helper method used to give entires their name to ease their identification. As an example, if an entry is in the package
+        /// with id 0934 and the entry is at the index of 012 (hex) then its name would be 0934_00000012. Providing easy naming scheme
+        /// </summary>
+        /// <param name="package">The package containing the entry</param>
+        /// <param name="entry">The entry to find the name for</param>
+        /// <returns>The name of the entry with the format packageid_entryIndex</returns>
+        public static string entry_name(Tiger.Package package, Tiger.Formats.Entry entry)
+        {
+            return $"{package.package_id.ToString("X4")}_{package.entry_table().IndexOf(entry).ToString("X8")}".ToUpper();
+        }
+
+        /// <summary>
+        /// A helper method used to give entires their name to ease their identification. As an example, if an entry is in the package
+        /// with id 0934 and the entry is at the index of 012 (hex) then its name would be 0934_00000012. Providing easy naming scheme
+        /// </summary>
+        /// <param name="package_id">The package_id containing the entry</param>
+        /// <param name="entry_index">The index of the entry to find the name for</param>
+        /// <returns>The name of the entry with the format packageid_entryIndex</returns>
+        public static string entry_name(uint package_id, int entry_index)
+        {
+            return $"{package_id.ToString("X4")}_{entry_index.ToString("X8")}";
+        }
+
+        /// <summary>
         /// The method responsible for doing the decryption on blocks found to be encrypted. 
         /// </summary>
         /// <returns>A byte array (byte[]) containing the decrypted data.</returns>
