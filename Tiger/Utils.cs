@@ -36,15 +36,13 @@ namespace Tiger
         /// <summary>
         /// The method responsible for doing the decryption on blocks found to be encrypted. 
         /// </summary>
-        /// <returns>
-        /// A byte array (byte[]) containing the decrypted data.
-        /// </returns>
+        /// <returns>A byte array (byte[]) containing the decrypted data.</returns>
         /// <param name="block_data">The data which we wish to decrypt. Given as a byte array</param>
         /// <param name="package_id">The PackageID for the package being decrypted. Given as an UInt16</param>
         /// <param name="block">The Block on which the decryption is happening. Given as an object of the type Block</param>
         public static byte[] decrypt(byte[] block_data, UInt16 package_id, Tiger.Formats.Block block)
         {
-            byte[] decrypted_data = new byte[block.Size];
+            byte[] decrypted_data = new byte[block.size];
 
             byte[] package_nonce = new byte[12];
             Array.Copy(initial_nonce, package_nonce, initial_nonce.Length);
@@ -63,7 +61,7 @@ namespace Tiger
                 {
                     using (CryptoStream cryptoStream = new CryptoStream(decryption_result, EncryptionProvider.CreateDecryptor(), CryptoStreamMode.Write))
                     {
-                        cryptoStream.Write(block_data, 0, (int)block.Size);
+                        cryptoStream.Write(block_data, 0, (int)block.size);
                         cryptoStream.FlushFinalBlock();
                         decrypted_data = decryption_result.ToArray();
                     }
@@ -81,9 +79,7 @@ namespace Tiger
         /// <summary>
         /// A method responsible for decompressing the entires that require decompression. 
         /// </summary>
-        /// <returns>
-        /// A byte array (byte[]) containing the decompressed data.
-        /// </returns>
+        /// <returns>A byte array (byte[]) containing the decompressed data.</returns>
         /// <param name="block_data">The data which we wish to decompress. Given as a byte array</param>
         public static byte[] decompress(byte[] block_data)
         {

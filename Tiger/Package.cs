@@ -165,11 +165,11 @@ namespace Tiger
                     {
                         block_table_holder.Add(new Tiger.Formats.Block()
                         {
-                            Offset = BinReader.ReadUInt32(),
-                            Size = BinReader.ReadUInt32(),
-                            PatchID = BinReader.ReadUInt16(),
-                            Flags = BinReader.ReadUInt16(),
-                            Hash = BinReader.ReadBytes(20),
+                            offset = BinReader.ReadUInt32(),
+                            size = BinReader.ReadUInt32(),
+                            patch_id = BinReader.ReadUInt16(),
+                            flags = BinReader.ReadUInt16(),
+                            hash = BinReader.ReadBytes(20),
                             GCMTag = BinReader.ReadBytes(16),
                         });
                     }

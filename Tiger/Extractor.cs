@@ -139,5 +139,72 @@ namespace Tiger
             return new Tiger.Package(this.packages_path, $"{Tiger.Utils.remove_patch_id_from_name(MasterPackageDict[package_id])}_{patch_id}.pkg");
         }
 
+        /// <summary>
+        /// A method used to extract the data of a single entry and then return it. 
+        /// </summary>
+        /// <returns>Returns a byte array containing the extracted data</returns>
+        /// <param name="package">A Package object of the package containing the entry</param>
+        /// <param name="entry">An Entry object of the entry being extracted</param>
+        public byte[] extract_entry_data(Package package, Tiger.Formats.Entry entry)
+        {
+            uint current_block_index = entry.starting_block;
+            uint last_block_index = current_block_index + entry.block_count();
+            uint loaded_block_index = 0xFFFFFFFF;
+
+            List<byte> extracted_data = new List<byte>();
+            while (current_block_index < last_block_index)
+            {
+                if (current_block_index != loaded_block_index)
+                {
+                    Tiger.Formats.Block block = package.block_table()[(int)current_block_index];
+                    Tiger.Package referenced_package = this.package(package.package_id, block.patch_id);
+
+                    byte[] block_data = new byte[block.size];
+                    using (FileStream File = new FileStream(Path.Combine(referenced_package.path), FileMode.Open, FileAccess.Read))
+                    {
+                        File.Seek(block.offset, 0);
+                        using (BinaryReader BinReader = new BinaryReader(File))
+                        {
+                            block_data = BinReader.ReadBytes((int)block.size);
+                        }
+                    }
+
+                    byte[] DecryptedBlock = (block.isEncrypted()) ? Tiger.Utils.decrypt(block_data, package.header().package_id, block) : block_data;
+                    byte[] DecompressedBlock = (block.isCompressed()) ? Tiger.Utils.decompress(DecryptedBlock) : DecryptedBlock;
+                    loaded_block_index = current_block_index;
+
+                    int BlockOffset = (current_block_index == entry.starting_block) ? (int)entry.starting_block_offset : 0;
+                    int DataAvailable = ((int)(DecompressedBlock.Length - BlockOffset) < (int)(entry.file_size - extracted_data.Count())) ? ((int)DecompressedBlock.Length - BlockOffset) : ((int)entry.file_size - (int)extracted_data.Count());
+                    extracted_data.AddRange(DecompressedBlock.Skip(BlockOffset).Take(DataAvailable));
+                    current_block_index++;
+                }
+            }
+            return extracted_data.ToArray();
+        }
+
+        /// <summary>
+        /// A function overload for the 'extract_entry_data' method used to allow for the package to be accepted by its package name and index of the entry
+        /// </summary>
+        /// <returns>Returns a byte array containing the extracted data</returns>
+        /// <param name="package_name">The name of the package containing the entry</param>
+        /// <param name="entry_index">The index of the entry that we wish to extract in the entry table</param>
+        public byte[] extract_entry_data(string package_name, int entry_index)
+        {
+            Tiger.Package package = this.package(package_name);
+            return extract_entry_data(package, package.entry_table()[entry_index]);
+        }
+
+        /// <summary>
+        /// A function overload for the 'extract_entry_data' method used to allow for the package to be accepted by its package_id and index of the entry
+        /// </summary>
+        /// <returns>Returns a byte array containing the extracted data</returns>
+        /// <param name="package_name">The package_id of the package containing the entry</param>
+        /// <param name="entry_index">The index of the entry that we wish to extract in the entry table</param>
+        public byte[] extract_entry_data(uint package_id, int entry_index)
+        {
+            Tiger.Package package = this.package(package_id);
+            return extract_entry_data(package, package.entry_table()[entry_index]);
+        }
+
     }
 }

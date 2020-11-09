@@ -6,9 +6,9 @@ namespace Tiger.Formats
     /// </summary>
     public class Block
     {
-        public UInt32 Offset, Size;
-        public UInt16 PatchID, Flags;
-        public byte[] Hash = new byte[20];
+        public UInt32 offset, size;
+        public UInt16 patch_id, flags;
+        public byte[] hash = new byte[20];
         public byte[] GCMTag = new byte[16];
 
         /// <summary>
@@ -17,7 +17,7 @@ namespace Tiger.Formats
         /// <returns>true if the block is encrypted. false if otherwise</returns>
         public bool isEncrypted()
         {
-            return (Flags & 2) != 0;
+            return (flags & 2) != 0;
         }
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace Tiger.Formats
         /// <returns>true if the block is compressed. false if otherwise</returns>
         public bool isCompressed()
         {
-            return (Flags & 1) != 0;
+            return (flags & 1) != 0;
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace Tiger.Formats
         /// <returns>true if it uses an alternate key. false if otherwise</returns>
         public bool isAlternateKey()
         {
-            return (Flags & 4) != 0;
+            return (flags & 4) != 0;
         }
     }
 }
