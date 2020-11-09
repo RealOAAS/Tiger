@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
@@ -8,15 +8,21 @@
   <ItemGroup>
     <None Remove="Resources\oo2core_3_win64.dll" />
     <None Remove="Resources\RawtexCmd.exe" />
+    <None Remove="Resources\texconv.exe" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Resources\oo2core_3_win64.dll" />
     <EmbeddedResource Include="Resources\RawtexCmd.exe" />
+    <EmbeddedResource Include="Resources\texconv.exe" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Formats\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Security.Cryptography" Version="1.7.2" />
   </ItemGroup>
 
   <ItemGroup>

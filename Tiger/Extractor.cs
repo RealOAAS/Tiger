@@ -5,6 +5,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Reflection;
 using System.Runtime.Versioning;
+using System.Security.Cryptography;
+using System.Runtime.InteropServices;
 
 namespace Tiger
 {
@@ -36,7 +38,7 @@ namespace Tiger
         /// <param name="verbouse">Allows for the extractor to print to the screen</param>
         public Extractor(string packages_path, bool verbouse)
         {
-            Tiger.Logger.verbouse = verbouse;
+            Logger.verbouse = verbouse;
             this.PackagesPath = packages_path;
 
             //Check if the depenedencies are present, and if they're not all present, then extract them
@@ -64,13 +66,13 @@ namespace Tiger
         /// <returns>A list of strings of the master package names</returns>
         private List<string> get_master_packages_names()
         {
-            Tiger.Logger.log("Obtaining the names of the master packages");
+            Logger.log("Obtaining the names of the master packages");
 
             List<string> package_names = Directory.GetFiles(this.PackagesPath, "*.pkg").ToList().Select(package_name => Tiger.Utils.get_package_name_from_path(package_name)).ToList();
-            Tiger.Logger.log($"{package_names.Count()} packages found in the packages path");
+            Logger.log($"{package_names.Count()} packages found in the packages path");
 
             List<string> package_names_no_patch_id = package_names.Select(package_name => Tiger.Utils.remove_patch_id_from_name(package_name)).Distinct().ToList();
-            Tiger.Logger.log($"{package_names.Count()} packages resolved into {package_names_no_patch_id.Count()} unique packages");
+            Logger.log($"{package_names.Count()} packages resolved into {package_names_no_patch_id.Count()} unique packages");
 
             List<string> m_pkg_names = new List<string>();
             Parallel.ForEach(package_names_no_patch_id, pkg_name =>
@@ -93,7 +95,7 @@ namespace Tiger
         /// <returns>A dictionary of the package ids and the master package names</returns>
         public Dictionary<uint, string> get_master_packages_dict()
         {
-            Tiger.Logger.log("Creating the master packages dictionary");
+            Logger.log("Creating the master packages dictionary");
             Dictionary<uint, string> m_pkg_dict = new Dictionary<uint, string>();
 
             List<string> m_pkg_names = this.MasterPackageNames == null ? get_master_packages_names() : this.MasterPackageNames; //checking if the MasterPackageNames is null
