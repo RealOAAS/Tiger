@@ -1,10 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+
 namespace TigerViewer.Controllers
 {
-    public class PackageNamesController
+    [ApiController]
+    [Route("[controller]")]
+    public class PackageNamesController : ControllerBase
     {
-        public PackageNamesController()
+        [HttpGet]
+        public IEnumerable<string> Get()
         {
+            return TigerIntegration.extractor.MasterPackageNames;
         }
     }
 }

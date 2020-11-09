@@ -1,10 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Newtonsoft;
+
 namespace TigerViewer.Controllers
 {
-    public class MasterPackageDictController
+    [ApiController]
+    [Route("[controller]")]
+    public class MasterPackagesDictController : ControllerBase
     {
-        public MasterPackageDictController()
+        [HttpGet]
+        public string Get()
         {
+            return Newtonsoft.Json.JsonConvert.SerializeObject(TigerIntegration.extractor.get_master_packages_dict());
         }
     }
 }

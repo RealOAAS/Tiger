@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace Tiger
 {
     /// <summary>
@@ -8,6 +10,8 @@ namespace Tiger
     {
         public static bool verbouse = true;
         public static bool toFile = false;
+        public static int buffer_length = 10;
+        public static List<string> buffer = new List<string>();
 
         /// <summary>
         /// A class method who's main use is to log a message both to console and to a file
@@ -23,3 +27,7 @@ namespace Tiger
         }
     }
 }
+
+/*
+Todo: allow for the logging to be done to a logs files 
+*/

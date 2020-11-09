@@ -72,7 +72,7 @@ namespace Tiger
         /// A method used to create a dictionary of the package ids and their respective master package names
         /// </summary>
         /// <returns>A dictionary of the package ids and the master package names</returns>
-        private Dictionary<uint, string> get_master_packages_dict()
+        public Dictionary<uint, string> get_master_packages_dict()
         {
             Tiger.Logger.log("Creating the master packages dictionary");
             Dictionary<uint, string> m_pkg_dict = new Dictionary<uint, string>();
@@ -83,7 +83,7 @@ namespace Tiger
                 uint pkg_id = pkg_name.Contains("_en_") ? Convert.ToUInt32(pkg_name.Split('_')[^3], 16) : Convert.ToUInt32(pkg_name.Split('_')[^2], 16);
                 m_pkg_dict.Add(pkg_id, pkg_name);
             }
-            return new Dictionary<uint, string>();
+            return m_pkg_dict;
         }
 
         /// <summary>
