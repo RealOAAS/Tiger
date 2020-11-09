@@ -3,6 +3,8 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Reflection;
+using System.Runtime.Versioning;
 
 namespace Tiger
 {
@@ -36,6 +38,23 @@ namespace Tiger
         {
             Tiger.Logger.verbouse = verbouse;
             this.PackagesPath = packages_path;
+
+            //Check if the depenedencies are present, and if they're not all present, then extract them
+            List<string> dependencies = new List<string>() {"oo2core_3_win64.dll", "RawtexCmd.exe", "texconv.exe" };
+            foreach(string dependency in dependencies)
+            {
+                string filepath = Path.Join(Directory.GetCurrentDirectory(), dependency);
+                Logger.log($"Dependency '{dependency}' is found? {File.Exists(filepath)}");
+
+                if (!File.Exists( filepath ))
+                {
+                    //Extract the dependency if it isnt found.
+                    Logger.log($"Extracting {dependency}");
+
+                    Stream file_stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"Tiger.Resources.{dependency}");
+                    File.WriteAllBytes(filepath, new BinaryReader(file_stream).ReadBytes((int)file_stream.Length));
+                }
+            }
         }
 
         /// <summary>

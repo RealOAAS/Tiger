@@ -6,6 +6,31 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\oo2core_3_win64.dll" />
+    <None Remove="Resources\RawtexCmd.exe" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\oo2core_3_win64.dll" />
+    <EmbeddedResource Include="Resources\RawtexCmd.exe" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Folder Include="Formats\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="ExternalDependencies.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>ExternalDependencies.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="ExternalDependencies.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ExternalDependencies.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>
