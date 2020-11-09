@@ -20,7 +20,7 @@ namespace Tiger
         /// <returns>A string of the package name without the path</returns>
         public static string get_package_name_from_path(string package_path)
         {
-            return package_path.Split('/')[^1];
+            return package_path.Split('\\')[^1];
         }
 
         /// <summary>
