@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Collections.Generic;
 
 namespace Tiger
@@ -21,13 +22,26 @@ namespace Tiger
         {
             if (verbouse)
             {
-                string TimeString = DateTime.Now.ToString("hh:mm:ss tt");
-                Console.WriteLine($"[{TimeString}]: {message}");
+                string TimeString = DateTime.Now.ToString("dd/MMM/yyyy hh:mm:ss tt");
+                string logging_message = $"[{TimeString}]: {message}";
+                Console.WriteLine(logging_message);
+
+                if(toFile)
+                {
+                    buffer.Add(logging_message);
+                    if (buffer.Count >= buffer_length) //Flush if the buffer is equal to its maximum length
+                        flush();
+                }
             }
+        }
+
+        /// <summary>
+        /// A method used to flush the buffer of its contents and write them to a file
+        /// </summary>
+        public static void flush()
+        {
+            File.AppendAllLines("logs.log", buffer);
+            buffer.Clear(); //remove all of the items previously in the buffer
         }
     }
 }
-
-/*
-Todo: allow for the logging to be done to a logs files 
-*/

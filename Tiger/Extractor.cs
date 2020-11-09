@@ -60,6 +60,15 @@ namespace Tiger
         }
 
         /// <summary>
+        /// A destructor to the extractor class. Used when the object is being destroyed
+        /// </summary>
+        ~Extractor()
+        {
+            Logger.log("Extractor is being destroyed. Flushing the logger buffer");
+            Logger.flush();
+        }
+
+        /// <summary>
         /// A method used to obtain the names of all of the master packages. 
         /// </summary>
         /// <remarks>A master package is one with the highest patch id amongst all of the other packages sharing the same package id</remarks>
@@ -86,7 +95,7 @@ namespace Tiger
                     }
                 }
             });
-            return m_pkg_names;
+            return m_pkg_names.OrderBy(x=>x).ToList();
         }
 
         /// <summary>
