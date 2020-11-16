@@ -50,67 +50,38 @@ namespace Tiger
 
             Logger.log($"Header not cached. Building header for {this.name}");
 
-            header_holder = new Tiger.Formats.Header();
-            using (FileStream File = new FileStream(Path.Combine(this.path), FileMode.Open, FileAccess.Read))
+            Tiger.Formats.Header header = new Tiger.Formats.Header();
+            using (FileStream File = new FileStream(this.path, FileMode.Open, FileAccess.Read))
             {
                 using (BinaryReader BinReader = new BinaryReader(File))
                 {
-                    header_holder.version = BinReader.ReadUInt16();
-                    header_holder.platform = BinReader.ReadUInt16();
-                    header_holder.package_id = BinReader.ReadUInt16();
+                    header.version = BinReader.ReadUInt16();
+                    header.platform = BinReader.ReadUInt16();
 
-                    File.Seek(16, 0);
-                    header_holder.build_date = new DateTime(1970, 1, 1).AddSeconds(BinReader.ReadInt64());
+                    File.Seek(0x10, 0);
+                    header.package_id = BinReader.ReadUInt16();
+                    header.isPackage = BinReader.ReadUInt16() == 1 ? true : false;
+                    header.isStartupPackage = BinReader.ReadUInt16() == 1 ? true : false;
 
-                    File.Seek(26, 0);
-                    header_holder.new_flag = BinReader.ReadUInt16();
+                    File.Seek(0x20, 0);
+                    header.build_date = new DateTime(1970, 1, 1).AddSeconds(BinReader.ReadInt64());
 
-                    File.Seek(32, 0);
-                    header_holder.patch_id = BinReader.ReadUInt16();
+                    File.Seek(0x30, 0);
+                    header.patch_id = BinReader.ReadUInt16();
 
-                    File.Seek(36, 0);
-                    header_holder.build_string = BinReader.ReadUInt32();
+                    File.Seek(0x32, 0);
+                    header.language = (Tiger.Formats.PackageLanguage)BinReader.ReadUInt16();
 
-                    File.Seek(176, 0);
-                    header_holder.signature_offset = BinReader.ReadUInt32();
-
-                    File.Seek(272, 0);
-                    header_holder.new_table_offset = BinReader.ReadUInt32();
-
-                    Logger.log($"Package {name} new header structure: {header_holder.new_flag == 1}");
-
-                    if (header_holder.new_flag != 1)
-                    {
-                        //This would mean that the package uses the old header structure
-                        File.Seek(180, 0);
-                        header_holder.entry_table_size = BinReader.ReadUInt32();
-                        header_holder.entry_table_offset = BinReader.ReadUInt32();
-                        header_holder.entry_table_hash = BinReader.ReadBytes(20);
-
-                        header_holder.block_table_size = BinReader.ReadUInt32();
-                        header_holder.block_table_offset = BinReader.ReadUInt32();
-                        header_holder.block_table_hash = BinReader.ReadBytes(20);
-                    }
-                    else
-                    {
-                        //using the new package structure
-                        File.Seek(header_holder.new_table_offset + 16, 0);
-                        header_holder.entry_table_size = BinReader.ReadUInt16();
-
-                        File.Seek(header_holder.new_table_offset + 24, 0);
-                        header_holder.entry_table_offset = BinReader.ReadUInt32() + header_holder.new_table_offset + 40;
-
-                        File.Seek(header_holder.new_table_offset + 32, 0);
-                        header_holder.block_table_size = BinReader.ReadUInt16();
-
-                        File.Seek(header_holder.new_table_offset + 40, 0);
-                        header_holder.block_table_offset = BinReader.ReadUInt32() + header_holder.new_table_offset + 56;
-                    }
-
-                    Logger.log($"Package {name} has {header_holder.entry_table_size} entries at an offset of 0x{header_holder.entry_table_offset.ToString("X4")}");
+                    File.Seek(0x60, 0);
+                    header.entry_table_size = BinReader.ReadUInt32();
+                    header.entry_table_offset = BinReader.ReadUInt32();
+                    header.block_table_size = BinReader.ReadUInt32();
+                    header.block_table_offset = BinReader.ReadUInt32();
                 }
             }
+            header_holder = header;
 
+            Logger.log($"Package {name} has {header_holder.entry_table_size} entries at an offset of 0x{header_holder.entry_table_offset.ToString("X4")}");
             return header_holder;
         }  
 

@@ -116,6 +116,7 @@ namespace Tiger
             return m_pkg_dict;
         }
 
+        #region package
         /// <summary>
         /// A factory method used to initialize a Tiger.Package using the package name
         /// </summary>
@@ -147,7 +148,9 @@ namespace Tiger
         {
             return new Tiger.Package(this.packages_path, $"{Tiger.Utils.remove_patch_id_from_name(MasterPackageDict[package_id])}_{patch_id}.pkg");
         }
+        #endregion
 
+        #region extract_entry_data
         /// <summary>
         /// A method used to extract the data of a single entry and then return it. 
         /// </summary>
@@ -214,5 +217,55 @@ namespace Tiger
             Tiger.Package package = this.package(package_id);
             return extract_entry_data(package, package.entry_table()[entry_index]);
         }
+        #endregion
+
+        #region extract_binary_package_to_folder
+        /// <summary>
+        /// A method used to extract all of the entries inside of a package to the extraction path
+        /// </summary>
+        /// <remarks>
+        /// The term 'binary' in the function name means that this function writes .bin files to the extraction_path
+        /// which are decrypted and decompressed blocks without any processing done to them
+        /// </remarks>
+        /// <param name="extraction_path">The path to extract the entries to</param>
+        /// <param name="package">A package object of the package to extract</param>
+        public void extract_binary_package_to_folder(string extraction_path, Tiger.Package package)
+        {
+            if (!Directory.Exists(extraction_path))
+            {
+                Logger.log($"The directiory '{extraction_path}' is not found");
+                throw new DirectoryNotFoundException($"The directiory '{extraction_path}' is not found");
+            }
+
+            Logger.log($"Extracting package: {package.name}");
+            foreach(Tiger.Formats.Entry entry in package.entry_table())
+            {
+                byte[] entry_data = this.extract_entry_data(package, entry);
+                File.WriteAllBytes(Path.Join(extraction_path, Tiger.Utils.entry_name(package, entry)) + ".bin", entry_data);
+            }
+        }
+
+        /// <summary>
+        /// A function override for extract_binary_package_to_folder that uses the package name and not a package object
+        /// </summary>
+        /// <param name="extraction_path">The path to extract the entries to</param>
+        /// <param name="package_name">The name of the package to extract</param>
+        public void extract_binary_package_to_folder(string extraction_path, string package_name)
+        {
+            extract_binary_package_to_folder(extraction_path, this.package(package_name));
+        }
+
+        /// <summary>
+        /// A function override for extract_binary_package_to_folder that uses the package id and not a package object
+        /// </summary>
+        /// <param name="extraction_path">The path to extract the entries to</param>
+        /// <param name="package_id">The id of the package to extract</param>
+        public void extract_binary_package_to_folder(string extraction_path, uint package_id)
+        {
+            extract_binary_package_to_folder(extraction_path, this.package(package_id));
+        }
+        #endregion
+
+
     }
 }
