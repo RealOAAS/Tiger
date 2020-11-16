@@ -6,13 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\oo2core_3_win64.dll" />
+    <None Remove="Resources\oo2core_8_win64.dll" />
     <None Remove="Resources\RawtexCmd.exe" />
     <None Remove="Resources\texconv.exe" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="Resources\oo2core_3_win64.dll" />
+    <EmbeddedResource Include="Resources\oo2core_8_win64.dll" />
     <EmbeddedResource Include="Resources\RawtexCmd.exe" />
     <EmbeddedResource Include="Resources\texconv.exe" />
   </ItemGroup>

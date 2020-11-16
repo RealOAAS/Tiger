@@ -42,7 +42,7 @@ namespace Tiger
             this.PackagesPath = packages_path;
 
             //Check if the depenedencies are present, and if they're not all present, then extract them
-            List<string> dependencies = new List<string>() {"oo2core_3_win64.dll", "RawtexCmd.exe", "texconv.exe" };
+            List<string> dependencies = new List<string>() {"oo2core_8_win64.dll", "RawtexCmd.exe", "texconv.exe" };
             foreach(string dependency in dependencies)
             {
                 string filepath = Path.Join(Directory.GetCurrentDirectory(), dependency);
@@ -182,9 +182,9 @@ namespace Tiger
                     byte[] DecompressedBlock = (block.isCompressed()) ? Tiger.Utils.decompress(DecryptedBlock) : DecryptedBlock;
                     loaded_block_index = current_block_index;
 
-                    int BlockOffset = (current_block_index == entry.starting_block) ? (int)entry.starting_block_offset : 0;
-                    int DataAvailable = ((int)(DecompressedBlock.Length - BlockOffset) < (int)(entry.file_size - extracted_data.Count())) ? ((int)DecompressedBlock.Length - BlockOffset) : ((int)entry.file_size - (int)extracted_data.Count());
-                    extracted_data.AddRange(DecompressedBlock.Skip(BlockOffset).Take(DataAvailable));
+                    int block_offset = (current_block_index == entry.starting_block) ? (int)entry.starting_block_offset : 0;
+                    int data_available = ((int)(DecompressedBlock.Length - block_offset) < (int)(entry.file_size - extracted_data.Count())) ? ((int)DecompressedBlock.Length - block_offset) : ((int)entry.file_size - (int)extracted_data.Count());
+                    extracted_data.AddRange(DecompressedBlock.Skip(block_offset).Take(data_available));
                     current_block_index++;
                 }
             }
