@@ -97,7 +97,7 @@ namespace Tiger
         /// <summary>
         /// A wrapper to the oodle dll. 
         /// </summary>
-        [DllImport(@"oo2core_3_win64.dll")]
+        [DllImport(@"oo2core_8_win64.dll")]
         private static extern int OodleLZ_Decompress(byte[] compressed_bytes, int size_of_compressed_bytes, byte[] decompressed_bytes, int size_of_decompressed_bytes, uint a, uint b, ulong c, uint d, uint e, uint f, uint g, uint h, uint i, uint threadModule);
 
         /// <summary>
@@ -108,7 +108,7 @@ namespace Tiger
         public static byte[] decompress(byte[] block_data)
         {
             byte[] decompressed_data = new byte[0x40000];
-            OodleLZ_Decompress(block_data, block_data.Length, decompressed_data, 262144, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3);
+            OodleLZ_Decompress(block_data, block_data.Length, decompressed_data, 0x40000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3);
             return decompressed_data;
         }
     }
