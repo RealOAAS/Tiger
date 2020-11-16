@@ -9,7 +9,7 @@ namespace Tiger
             Console.WriteLine("Hello World!");
             Tiger.Extractor extractor = new Tiger.Extractor(@"C:\Program Files (x86)\Steam\steamapps\common\Destiny 2\packages", true);
 
-            extractor.extract_binary_package_to_folder(@"C:\D2PkgExtractionPath", extractor.MasterPackageNames[12]);
+            extractor.extract_binary_package_to_folder(@"C:\D2PkgExtractionPath", "w64_sr_ui_0112_0.pkg");
         }
     }
 }

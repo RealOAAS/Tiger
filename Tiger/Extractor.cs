@@ -86,7 +86,7 @@ namespace Tiger
             List<string> m_pkg_names = new List<string>();
             Parallel.ForEach(package_names_no_patch_id, pkg_name =>
             {
-                for (int i = 10; i > 0; i--)
+                for (int i = 10; i >= 0; i--)
                 {
                     if (File.Exists($"{this.PackagesPath}/{pkg_name}_{i}.pkg"))
                     {
@@ -110,7 +110,7 @@ namespace Tiger
             List<string> m_pkg_names = this.MasterPackageNames == null ? get_master_packages_names() : this.MasterPackageNames; //checking if the MasterPackageNames is null
             foreach (string pkg_name in m_pkg_names)
             {
-                uint pkg_id = pkg_name.Contains("_en_") ? Convert.ToUInt32(pkg_name.Split('_')[^3], 16) : Convert.ToUInt32(pkg_name.Split('_')[^2], 16);
+                uint pkg_id = this.package(pkg_name).package_id;
                 m_pkg_dict.Add(pkg_id, pkg_name);
             }
             return m_pkg_dict;
@@ -237,11 +237,13 @@ namespace Tiger
                 throw new DirectoryNotFoundException($"The directiory '{extraction_path}' is not found");
             }
 
+            Directory.CreateDirectory(Path.Join(extraction_path, package.name));
+
             Logger.log($"Extracting package: {package.name}");
             foreach(Tiger.Formats.Entry entry in package.entry_table())
             {
                 byte[] entry_data = this.extract_entry_data(package, entry);
-                File.WriteAllBytes(Path.Join(extraction_path, Tiger.Utils.entry_name(package, entry)) + ".bin", entry_data);
+                File.WriteAllBytes(Path.Join(extraction_path, package.name ,Tiger.Utils.entry_name(package, entry)) + ".bin", entry_data);
             }
         }
 
