@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
+using System.Text;
 using Security.Cryptography;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Runtime.InteropServices;
 
@@ -134,6 +137,22 @@ namespace Tiger
                 uint flags = reference_unknown_id & 0x3;
                 package_id = (flags == 1) ? package_id : package_id | (uint)((int)0x100 << (int)flags);
             }
+        }
+
+        /// <summary>
+        /// A method used to convert a dictionary of index and strings to a list. 
+        /// </summary>
+        /// <remarks>
+        /// This method is used typically with the Tiger.Parser.StringBankParser 
+        /// class to convert the string dictionary.
+        /// </remarks>
+        /// <param name="dictionary_data">The dictionary data as a byte array</param>
+        /// <returns>An array of strings foudn in the dictionary</returns>
+        public static string[] dictionary_bytes_to_list(byte[] dictionary_data)
+        {
+            string dictionary_string = Encoding.UTF8.GetString(dictionary_data);
+            Dictionary<int, string> dictionary = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<int, string>>(dictionary_string);
+            return dictionary.Select( p => p.Value).ToArray();
         }
     }
 }
