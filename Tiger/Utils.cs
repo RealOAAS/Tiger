@@ -52,7 +52,7 @@ namespace Tiger
         /// <param name="package_id">The package_id containing the entry</param>
         /// <param name="entry_index">The index of the entry to find the name for</param>
         /// <returns>The name of the entry with the format packageid_entryIndex</returns>
-        public static string entry_name(uint package_id, int entry_index)
+        public static string entry_name(uint package_id, uint entry_index)
         {
             return $"{package_id.ToString("X4")}_{entry_index.ToString("X8")}";
         }
