@@ -207,10 +207,26 @@ namespace Tiger
             return extract_entry_data(package, package.entry_table().IndexOf(entry));
         }
 
+        /// <summary>
+        /// A method used to extract the data of a single entry and then return it. 
+        /// </summary>
+        /// <returns>A ParsedFile object of the data in the parsed file and its extension and metadata</returns>
+        /// <param name="package_id">A Package ID of the package containing the entry</param>
+        /// <param name="entry_index">The index of the entry to extract</param>
         public Tiger.Parsers.ParsedFile extract_entry_data(uint package_id, int entry_index)
         {
             Package package = this.package(package_id);
             return extract_entry_data(package, entry_index);
+        }
+
+        /// <summary>
+        /// A method used to extract the data of a single entry and then return it. 
+        /// </summary>
+        /// <returns>A ParsedFile object of the data in the parsed file and its extension and metadata</returns>
+        /// <param name="reference">A Tiger.Utils.EntryReference object that makes a reference to another entry</param>
+        public Tiger.Parsers.ParsedFile extract_entry_data(Tiger.Utils.EntryReference reference)
+        {
+            return extract_entry_data(this.package(reference.package_id), (int)reference.entry_index);
         }
         #endregion
 

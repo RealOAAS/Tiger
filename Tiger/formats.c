@@ -162,3 +162,22 @@ struct SPkgBlock_808099F1 {
 struct SPkgBlock_808099EF {
     // Struct of the file containing string references and string hashes for different strings in different languages
 };
+
+struct SPkgBlock_80803C12 {
+    // Struct defining a file that makes references to fonts and has their names
+    uint64_t file_size;         //0x0
+    uint64_t reference_hash;    //0x8
+
+    uint64_t name_offset;       //0x10  Relative offset
+    uint64_t font_file_size;    //0x18
+
+    uint64_t block_type;        //0x20
+    uint64_t name_length;       //0x28
+
+    uint8_t name[name_length];  //0x30
+};
+
+/*
+NOTES:
+    - Seems like 799D are the equivalent of 7BEA files
+*/

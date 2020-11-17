@@ -12,7 +12,10 @@ namespace Tiger
             //extractor.extract_binary_package_to_folder(@"C:\D2PkgExtractionPath", 0x102);
 
             //var x = new Tiger.Parsers.TextureParser(extractor.package(0x156), 8, extractor).Parse();
-            var n = new Tiger.Parsers.StringReferenceParser(extractor.package(0x101), 0x43, extractor).Parse();
+            //var n = new Tiger.Parsers.FontReferenceParser(extractor.package(0x100), 0x39, extractor).Parse();
+
+
+
         }
     }
 }
