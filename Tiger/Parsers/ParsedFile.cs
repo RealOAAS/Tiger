@@ -23,6 +23,7 @@ namespace Tiger.Parsers
 
         private uint source_package_id;
         private uint source_entry_index;
+        private string input_name;
 
         private static char[] trim_characters = new char[] { '.' };
 
@@ -33,10 +34,12 @@ namespace Tiger.Parsers
         /// <param name="data">The data obtained from the parsed file</param>
         /// <param name="source_package_id">The ID of the package that the entry originates from</param>
         /// <param name="source_entry_index">The index of the origin entry in the entry table</param>
-        public ParsedFile(string extension, byte[] data, uint source_package_id, uint source_entry_index)
+        /// <param name="name">An optional argument that can be used to specify the name of a ParsedFile when available</param>
+        public ParsedFile(string extension, byte[] data, uint source_package_id, uint source_entry_index, string name = null)
         {
-            this.extension = extension;
             this.data = data;
+            this.input_name = name;
+            this.extension = extension;
             this.source_entry_index = source_entry_index;
             this.source_package_id = source_package_id;
         }
@@ -47,7 +50,8 @@ namespace Tiger.Parsers
         /// <param name="path">The path of the directory to extract the file to</param>
         public void WriteToFile(string path)
         {
-            string file_path = System.IO.Path.Combine(path, Tiger.Utils.entry_name(source_package_id, source_entry_index));
+            string file_name = this.input_name == null ? Tiger.Utils.entry_name(source_package_id, source_entry_index) : this.input_name;
+            string file_path = System.IO.Path.Combine(path, file_name);
             System.IO.File.WriteAllBytes( $"{file_path}.{extension}", data );
         }
     }

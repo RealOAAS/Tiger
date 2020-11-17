@@ -102,6 +102,12 @@ struct Block {
 };
 
 //Entry Types and Subtypes
+struct SPkgEntry_24 {
+    // A font file
+
+    // SubType 0: An OTF font
+};
+
 struct SPkgEntry_26 {
     // 3rd Party
 
