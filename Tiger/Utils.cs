@@ -111,5 +111,29 @@ namespace Tiger
             OodleLZ_Decompress(block_data, block_data.Length, decompressed_data, 0x40000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3);
             return decompressed_data;
         }
+
+        /// <summary>
+        /// An entry reference object containing a package_id and an entry index
+        /// </summary>
+        public class EntryReference
+        {
+            public uint package_id { get; private set; }
+            public uint entry_index { get; private set; }
+
+            /// <summary>
+            /// A constructor that is used to initialize a new EntryReference. It takes an entry_a and initializes a new
+            /// object of the package_id and the entry_index being referenced
+            /// </summary>
+            /// <param name="entry_a">A uint of the entry_a data. Entry_a is uint32_t hash which makes references to entries</param>
+            public EntryReference(uint entry_a)
+            {
+                entry_index = entry_a & 0x1FFF;
+                package_id = (entry_a >> 13) & 0x3FF;
+                uint reference_unknown_id = (entry_a >> 23) & 0x3FF;
+
+                uint flags = reference_unknown_id & 0x3;
+                package_id = (flags == 1) ? package_id : package_id | (uint)((int)0x100 << (int)flags);
+            }
+        }
     }
 }
