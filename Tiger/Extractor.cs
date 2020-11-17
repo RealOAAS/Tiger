@@ -154,11 +154,13 @@ namespace Tiger
         /// <summary>
         /// A method used to extract the data of a single entry and then return it. 
         /// </summary>
-        /// <returns>Returns a byte array containing the extracted data</returns>
+        /// <returns>A ParsedFile object of the data in the parsed file and its extension and metadata</returns>
         /// <param name="package">A Package object of the package containing the entry</param>
-        /// <param name="entry">An Entry object of the entry being extracted</param>
-        public byte[] extract_entry_data(Package package, Tiger.Formats.Entry entry)
+        /// <param name="entry_index">The index of the entry to extract</param>
+        public Tiger.Parsers.ParsedFile extract_entry_data(Package package, int entry_index)
         {
+            Tiger.Formats.Entry entry = package.entry_table()[entry_index];
+
             uint current_block_index = entry.starting_block;
             uint last_block_index = current_block_index + entry.block_count();
             uint loaded_block_index = 0xFFFFFFFF;
@@ -191,31 +193,24 @@ namespace Tiger
                     current_block_index++;
                 }
             }
-            return extracted_data.ToArray();
+            return new Parsers.ParsedFile("bin", extracted_data.ToArray(), package.package_id, (uint)entry_index);
         }
 
         /// <summary>
-        /// A function overload for the 'extract_entry_data' method used to allow for the package to be accepted by its package name and index of the entry
+        /// A method used to extract the data of a single entry and then return it. 
         /// </summary>
-        /// <returns>Returns a byte array containing the extracted data</returns>
-        /// <param name="package_name">The name of the package containing the entry</param>
-        /// <param name="entry_index">The index of the entry that we wish to extract in the entry table</param>
-        public byte[] extract_entry_data(string package_name, int entry_index)
+        /// <returns>A ParsedFile object of the data in the parsed file and its extension and metadata</returns>
+        /// <param name="package">A Package object of the package containing the entry</param>
+        /// <param name="entry">An Entry object of the entry being extracted</param>
+        public Tiger.Parsers.ParsedFile extract_entry_data(Package package, Tiger.Formats.Entry entry)
         {
-            Tiger.Package package = this.package(package_name);
-            return extract_entry_data(package, package.entry_table()[entry_index]);
+            return extract_entry_data(package, package.entry_table().IndexOf(entry));
         }
 
-        /// <summary>
-        /// A function overload for the 'extract_entry_data' method used to allow for the package to be accepted by its package_id and index of the entry
-        /// </summary>
-        /// <returns>Returns a byte array containing the extracted data</returns>
-        /// <param name="package_name">The package_id of the package containing the entry</param>
-        /// <param name="entry_index">The index of the entry that we wish to extract in the entry table</param>
-        public byte[] extract_entry_data(uint package_id, int entry_index)
+        public Tiger.Parsers.ParsedFile extract_entry_data(uint package_id, int entry_index)
         {
-            Tiger.Package package = this.package(package_id);
-            return extract_entry_data(package, package.entry_table()[entry_index]);
+            Package package = this.package(package_id);
+            return extract_entry_data(package, entry_index);
         }
         #endregion
 

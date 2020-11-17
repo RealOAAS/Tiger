@@ -8,7 +8,7 @@ namespace Tiger.Parsers
     /// A class used to signify a parsed file. A parsed file contains expressions such as the extension and the file data used to
     /// identify a parsed file
     /// </summary>
-    class ParsedFile
+    public class ParsedFile
     {
         public string extension { get; private set; }
         public byte[] data { get; private set; }
