@@ -235,10 +235,9 @@ namespace Tiger
             Directory.CreateDirectory(Path.Join(extraction_path, package.name));
 
             Logger.log($"Extracting package: {package.name}");
-            foreach(Tiger.Formats.Entry entry in package.entry_table())
+            for(int entry_index = 0; entry_index< package.entry_table().Count(); entry_index++ )
             {
-                byte[] entry_data = this.extract_entry_data(package, entry);
-                File.WriteAllBytes(Path.Join(extraction_path, package.name ,Tiger.Utils.entry_name(package, entry)) + ".bin", entry_data);
+                extract_entry_data(package, entry_index).WriteToFile(Path.Combine(extraction_path, package.no_patch_id_name));
             }
         }
 
