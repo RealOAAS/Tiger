@@ -9,7 +9,7 @@ namespace Tiger
     /// </summary>
     /// <remarks>
     /// You should ideally not need to instantiate this class manually. Use the factory methods in 
-    /// Tiger.Extractor to instantiate packages using their name, package_id, and patch_id.
+    /// Tiger.Extractor to instantiate packages using their name, package_id, or patch_id.
     /// </remarks>
     public class Package
     {
@@ -48,7 +48,7 @@ namespace Tiger
             if (header_holder != null)
                 return header_holder;
 
-            //Logger.log($"Header not cached. Building header for {this.name}");
+            Logger.log($"Header not cached. Building header for {this.name}");
 
             Tiger.Formats.Header header = new Tiger.Formats.Header();
             using (FileStream File = new FileStream(this.path, FileMode.Open, FileAccess.Read))
@@ -81,7 +81,7 @@ namespace Tiger
             }
             header_holder = header;
 
-            //Logger.log($"Package {name} has {header_holder.entry_table_size} entries at an offset of 0x{header_holder.entry_table_offset.ToString("X4")}");
+            Logger.log($"Package {name} has {header_holder.entry_table_size} entries at an offset of 0x{header_holder.entry_table_offset.ToString("X4")}");
             return header_holder;
         }  
 
