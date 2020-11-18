@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace Tiger
 {
@@ -13,9 +14,6 @@ namespace Tiger
 
             //var x = new Tiger.Parsers.TextureParser(extractor.package(0x156), 8, extractor).Parse();
             //var n = new Tiger.Parsers.FontReferenceParser(extractor.package(0x100), 0x39, extractor).Parse();
-
-
-
         }
     }
 }

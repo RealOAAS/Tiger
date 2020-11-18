@@ -65,8 +65,8 @@ namespace Tiger.Parsers
                 texture_package = package;
                 texture_entry = temporary_entry;
 
-                header_package = extractor.package(header_entry.reference_package_id);
-                header_entry = texture_package.entry_table()[(int)header_entry.reference_id];
+                header_package = extractor.package(texture_entry.reference_package_id);
+                header_entry = header_package.entry_table()[(int)texture_entry.reference_id];
             }
             else
             {
