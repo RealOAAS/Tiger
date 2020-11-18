@@ -22,13 +22,13 @@ namespace Tiger
             set
             {
                 packages_path = value;
-                MasterPackageNames = get_master_packages_names();
-                MasterPackageDict = get_master_packages_dict();
+                packages_lookup_table = generate_packages_dictionary();
+                packages_id_lookup_table = generate_packages_id_lookup_table();
             }
         }
 
-        public List<string> MasterPackageNames { get; private set; }
-        public Dictionary<uint, string> MasterPackageDict { get; private set; }
+        public Dictionary<string, List<Package>> packages_lookup_table = new Dictionary<string, List<Package>>();
+        public Dictionary<uint, List<Package>> packages_id_lookup_table = new Dictionary<uint, List<Package>>();
         public bool verbouse { get; set; }
 
         /// <summary>
@@ -40,6 +40,8 @@ namespace Tiger
         {
             Logger.verbouse = verbouse;
             this.PackagesPath = packages_path;
+
+            master_packages_names();
 
             //Check if the depenedencies are present, and if they're not all present, then extract them
             List<string> dependencies = new List<string>() {"oo2core_8_win64.dll", "RawtexCmd.exe", "texconv.exe" };
@@ -73,47 +75,79 @@ namespace Tiger
         /// </summary>
         /// <remarks>A master package is one with the highest patch id amongst all of the other packages sharing the same package id</remarks>
         /// <returns>A list of strings of the master package names</returns>
-        private List<string> get_master_packages_names()
+        public List<string> master_packages_names()
         {
-            Logger.log("Obtaining the names of the master packages");
+            List<string> mpkg_names = new List<string>();
 
-            List<string> package_names = Directory.GetFiles(this.PackagesPath, "*.pkg").ToList().Select(package_name => Tiger.Utils.get_package_name_from_path(package_name)).ToList();
-            Logger.log($"{package_names.Count()} packages found in the packages path");
+            foreach (KeyValuePair<string, List<Package>> dictionary_entry in packages_lookup_table)
+                mpkg_names.Add(dictionary_entry.Value[^1].name);
 
-            List<string> package_names_no_patch_id = package_names.Select(package_name => Tiger.Utils.remove_patch_id_from_name(package_name)).Distinct().ToList();
-            Logger.log($"{package_names.Count()} packages resolved into {package_names_no_patch_id.Count()} unique packages");
-
-            List<string> m_pkg_names = new List<string>();
-            Parallel.ForEach(package_names_no_patch_id, pkg_name =>
-            {
-                for (int i = 10; i >= 0; i--)
-                {
-                    if (File.Exists($"{this.PackagesPath}/{pkg_name}_{i}.pkg"))
-                    {
-                        m_pkg_names.Add($"{pkg_name}_{i}.pkg");
-                        break;
-                    }
-                }
-            });
-            return m_pkg_names.OrderBy(x=>x).ToList();
+            return mpkg_names;
         }
 
         /// <summary>
-        /// A method used to create a dictionary of the package ids and their respective master package names
+        /// A method used to generate the packages dictionary with is a dictionary that contains all of the packages
+        /// Initialized and ready to be used. This is done so that a package does not need to be initialized multiple
+        /// times when being used
         /// </summary>
-        /// <returns>A dictionary of the package ids and the master package names</returns>
-        public Dictionary<uint, string> get_master_packages_dict()
+        /// <returns>A dictionary with the key as the package name (patch id removed) and a value of a list of all packages with that name</returns>
+        /// <remarks>
+        /// The dictionary returned has the following format. 
+        /// {
+        ///     "w64_ui_0932": [Package("w64_ui_0932_0.pkg"), Package("w64_ui_0932_1.pkg")],
+        ///     "w64_audio_0324": [Package("w64_audio_0324_0.pkg"), Package("w64_audio_0324_1.pkg"), Package("w64_audio_0324_2.pkg")],
+        /// }
+        /// Thus, the master package is the package always at the end
+        /// </remarks>
+        private Dictionary<string, List<Package>> generate_packages_dictionary()
         {
-            Logger.log("Creating the master packages dictionary");
-            Dictionary<uint, string> m_pkg_dict = new Dictionary<uint, string>();
+            Logger.log("Obtaining the names of the master packages names dictionary");
 
-            List<string> m_pkg_names = this.MasterPackageNames == null ? get_master_packages_names() : this.MasterPackageNames; //checking if the MasterPackageNames is null
-            foreach (string pkg_name in m_pkg_names)
+            string[] package_names = Directory.GetFiles(this.PackagesPath, "*.pkg").ToList().Select(package_name => Tiger.Utils.get_package_name_from_path(package_name)).ToArray();
+            Logger.log($"{package_names.Count()} packages found in the packages path");
+
+            Dictionary<string, List<Package>> package_lookup_temp = new Dictionary<string, List<Package>>();
+
+            //Adding all of the packages to the dictionary 
+            foreach (string package_name in package_names)
             {
-                uint pkg_id = this.package(pkg_name).package_id;
-                m_pkg_dict.Add(pkg_id, pkg_name);
+                string package_name_no_patch_id = Tiger.Utils.remove_patch_id_from_name(package_name);
+                if (!package_lookup_temp.ContainsKey(package_name_no_patch_id))
+                    package_lookup_temp[package_name_no_patch_id] = new List<Package>();
+
+                package_lookup_temp[package_name_no_patch_id].Add(new Package(packages_path, package_name));
             }
-            return m_pkg_dict;
+
+            //Sorting the packages inside the dictionary in order of the patch_id, so that its [0, 1, 2, .....] so the 
+            //packages are ordered in ascending order.
+            foreach(KeyValuePair<string, List<Package>> dictionary_entry in package_lookup_temp)
+                dictionary_entry.Value.Sort((x, y) => x.patch_id.CompareTo(y.patch_id)); 
+
+            return package_lookup_temp;
+        }
+
+        /// <summary>
+        /// A method used to generate the packages dictionary with is a dictionary that contains all of the packages
+        /// Initialized and ready to be used. This is done so that a package does not need to be initialized multiple
+        /// times when being used
+        /// </summary>
+        /// <returns>A dictionary with the key as the package id and a value of a list of all packages with that name</returns>
+        /// <remarks>
+        /// The dictionary returned has the following format. 
+        /// {
+        ///     0x0932: [Package("w64_ui_0932_0.pkg"), Package("w64_ui_0932_1.pkg")],
+        ///     0x0324: [Package("w64_audio_0324_0.pkg"), Package("w64_audio_0324_1.pkg"), Package("w64_audio_0324_2.pkg")],
+        /// }
+        /// Thus, the master package is the package always at the end
+        /// </remarks>
+        private Dictionary<uint, List<Package>> generate_packages_id_lookup_table()
+        {
+            Dictionary<uint, List<Package>> temp_lookup = new Dictionary<uint, List<Package>>();
+
+            foreach (KeyValuePair<string, List<Package>> dictionary_entry in packages_lookup_table)
+                temp_lookup[dictionary_entry.Value[0].package_id] = dictionary_entry.Value;
+
+            return temp_lookup;
         }
 
         #region package

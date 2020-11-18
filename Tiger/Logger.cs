@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 
 namespace Tiger
-{
+{   
     /// <summary>
     /// This class is the main logger used in Tiger to log information to the command line and to a logs file
     /// </summary>

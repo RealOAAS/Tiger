@@ -15,7 +15,7 @@ namespace TigerViewer.Controllers
         [HttpGet]
         public string Get()
         {
-            return Newtonsoft.Json.JsonConvert.SerializeObject(TigerIntegration.extractor.get_master_packages_dict());
+            return Newtonsoft.Json.JsonConvert.SerializeObject(TigerIntegration.extractor.generate_master_packages_dict());
         }
     }
 }
