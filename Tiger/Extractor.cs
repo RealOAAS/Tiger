@@ -44,7 +44,7 @@ namespace Tiger
             master_packages_names();
 
             //Check if the depenedencies are present, and if they're not all present, then extract them
-            List<string> dependencies = new List<string>() {"oo2core_8_win64.dll", "RawtexCmd.exe", "texconv.exe" };
+            List<string> dependencies = new List<string>() {"oo2core_8_win64.dll", "RawtexCmd.exe", "texconv.exe", "packed_codebooks.bin", "packed_codebooks_aoTuV_603.bin" };
             foreach(string dependency in dependencies)
             {
                 string filepath = Path.Join(Directory.GetCurrentDirectory(), dependency);

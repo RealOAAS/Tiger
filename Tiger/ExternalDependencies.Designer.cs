@@ -73,6 +73,26 @@ namespace Tiger {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] packed_codebooks {
+            get {
+                object obj = ResourceManager.GetObject("packed_codebooks", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] packed_codebooks_aoTuV_603 {
+            get {
+                object obj = ResourceManager.GetObject("packed_codebooks_aoTuV_603", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] RawtexCmd {
             get {
                 object obj = ResourceManager.GetObject("RawtexCmd", resourceCulture);
