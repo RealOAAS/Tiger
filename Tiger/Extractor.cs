@@ -38,7 +38,7 @@ namespace Tiger
         /// <param name="verbouse">Allows for the extractor to print to the screen</param>
         public Extractor(string packages_path, bool verbouse)
         {
-            Logger.verbouse = verbouse;
+            Logger.logging_level = LoggerLevels.MediumVerbouse;
             this.PackagesPath = packages_path;
 
             master_packages_names();
@@ -48,12 +48,12 @@ namespace Tiger
             foreach(string dependency in dependencies)
             {
                 string filepath = Path.Join(Directory.GetCurrentDirectory(), dependency);
-                Logger.log($"Dependency '{dependency}' is found? {File.Exists(filepath)}");
+                Logger.log($"Dependency '{dependency}' is found? {File.Exists(filepath)}", LoggerLevels.HighVerbouse);
 
                 if (!File.Exists( filepath ))
                 {
                     //Extract the dependency if it isnt found.
-                    Logger.log($"Extracting {dependency}");
+                    Logger.log($"Extracting {dependency}", LoggerLevels.HighVerbouse);
 
                     Stream file_stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"Tiger.Resources.{dependency}");
                     File.WriteAllBytes(filepath, new BinaryReader(file_stream).ReadBytes((int)file_stream.Length));
@@ -66,7 +66,7 @@ namespace Tiger
         /// </summary>
         ~Extractor()
         {
-            Logger.log("Extractor is being destroyed. Flushing the logger buffer");
+            Logger.log("Extractor is being destroyed. Flushing the logger buffer", LoggerLevels.HighVerbouse);
             Logger.flush();
         }
 
@@ -101,10 +101,10 @@ namespace Tiger
         /// </remarks>
         private Dictionary<string, List<Package>> generate_packages_dictionary()
         {
-            Logger.log("Obtaining the names of the master packages names dictionary");
+            Logger.log("Obtaining the names of the master packages names dictionary", LoggerLevels.HighVerbouse);
 
             string[] package_names = Directory.GetFiles(this.PackagesPath, "*.pkg").ToList().Select(package_name => Tiger.Utils.get_package_name_from_path(package_name)).ToArray();
-            Logger.log($"{package_names.Count()} packages found in the packages path");
+            Logger.log($"{package_names.Count()} packages found in the packages path", LoggerLevels.HighVerbouse);
 
             Dictionary<string, List<Package>> package_lookup_temp = new Dictionary<string, List<Package>>();
 
@@ -278,13 +278,13 @@ namespace Tiger
         {
             if (!Directory.Exists(extraction_path))
             {
-                Logger.log($"The directiory '{extraction_path}' is not found");
+                Logger.log($"The directiory '{extraction_path}' is not found", LoggerLevels.HighVerbouse);
                 throw new DirectoryNotFoundException($"The directiory '{extraction_path}' is not found");
             }
 
             Directory.CreateDirectory(Path.Join(extraction_path, package.name));
 
-            Logger.log($"Extracting package: {package.name}");
+            Logger.log($"Extracting package: {package.name}", LoggerLevels.HighVerbouse);
             for(int entry_index = 0; entry_index< package.entry_table().Count(); entry_index++ )
             {
                 extract_entry_data(package, entry_index).WriteToFile(Path.Combine(extraction_path, package.no_patch_id_name));
