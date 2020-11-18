@@ -63,6 +63,16 @@ namespace Tiger {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] librevorb {
+            get {
+                object obj = ResourceManager.GetObject("librevorb", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] oo2core_8_win64 {
             get {
                 object obj = ResourceManager.GetObject("oo2core_8_win64", resourceCulture);
