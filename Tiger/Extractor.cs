@@ -158,7 +158,7 @@ namespace Tiger
         /// <returns>A Tiger.Package object</returns>
         public Tiger.Package package(string package_name)
         {
-            return new Tiger.Package(this.packages_path, package_name);
+            return packages_lookup_table[ Tiger.Utils.remove_patch_id_from_name(package_name) ][^1];
         }
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace Tiger
         /// <returns>A Tiger.Package object</returns>
         public Tiger.Package package(uint package_id)
         {
-            return new Tiger.Package(this.packages_path, MasterPackageDict[package_id]);
+            return packages_id_lookup_table[package_id][^1];
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace Tiger
         /// <returns>A Tiger.Package object</returns>
         public Tiger.Package package(uint package_id, uint patch_id)
         {
-            return new Tiger.Package(this.packages_path, $"{Tiger.Utils.remove_patch_id_from_name(MasterPackageDict[package_id])}_{patch_id}.pkg");
+            return packages_id_lookup_table[package_id][(int)patch_id];
         }
         #endregion
 
