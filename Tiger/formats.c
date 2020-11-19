@@ -101,6 +101,12 @@ struct Block {
     // A:AltKey: Flags & 0x4
 };
 
+typedef struct ReferenceHash {
+    uint32_t unknown_id : 9;
+    uint32_t package_id : 10;
+    uint32_t entry_index : 13;
+}ReferenceHash;
+
 //Entry Types and Subtypes
 struct SPkgEntry_24 {
     // A font file
@@ -160,13 +166,14 @@ struct SPkgBlock_808099F1 {
 };
 
 struct SPkgBlock_808099EF {
-    // Struct of the file containing string references and string hashes for different strings in different languages
+    // Struct of the file containing string references and string hashes for different strings in different languages.
+    // So i guess you can say that this is a string localizer so to speak.
 };
 
 struct SPkgBlock_80803C12 {
     // Struct defining a file that makes references to fonts and has their names
     uint64_t file_size;         //0x0
-    uint64_t reference_hash;    //0x8
+    ReferenceHash hash;         //0x8
 
     uint64_t name_offset;       //0x10  Relative offset
     uint64_t font_file_size;    //0x18
@@ -176,6 +183,54 @@ struct SPkgBlock_80803C12 {
 
     uint8_t name[name_length];  //0x30
 };
+
+struct SPkgBlock_80808A41 {
+    uint32_t file_size;         //0x0
+    uint32_t field_04;          //0x4
+    uint32_t field_08;          //0x8 unknown
+    uint32_t field_0c;          //0xc unknown
+    
+    ReferenceHash hash;         //0x10
+    uint32_t field_14;          //0x14
+};
+
+struct SPkgBlock_80809733 {
+    //This struct contains data on audio files, their subtitles
+    //and who the person speaking is. Typically found in files
+    //of the block type 0x808097b8
+
+    uint32_t field_0;           //unknown
+    uint32_t audio_hash;        //A unique hash for this audio
+    
+    uint32_t field_08;          //unknown
+    uint32_t field_0c;          //unknown
+    uint64_t padding;           //padding
+
+    ReferenceHash audio_ref1;   //A reference to a file of the block type 8080.... that contains a reference to the RIFF file
+    uint32_t number_of_audios1; //The numbr of audio files contained in the above mentioned file
+    uint64_t padding1;          //padding
+
+    ReferenceHash string_localizer1;//A hash that points to the first string localizer that maps to the first stirng hash
+    uint32_t string_hash1;      //The hash of the string foudn in the string localizer 1
+    uint64_t padding3;          //Padding. But soemtimes contains some values
+
+    ReferenceHash audio_ref1;   //A reference to a file of the block type 8080.... that contains a reference to the RIFF file
+    uint32_t number_of_audios1; //The numbr of audio files contained in the above mentioned file
+    uint64_t padding4;          //padding
+
+    ReferenceHash string_localizer2;//A hash that points to the first string localizer that maps to the first stirng hash
+    uint32_t string_hash2;      //The hash of the string foudn in the string localizer 2
+    uint64_t padding5;          //Padding. But soemtimes contains some values
+
+    uint32_t empty;
+    uint32_t narrator_string_hash;//A string hash to the person narrating the current audio
+    uint32_t unknown1;
+    uint32_t unknown2;
+};
+
+struct SPkgBlock_80809728 {
+    uint64_t audio_hash;
+}
 
 /*
 NOTES:

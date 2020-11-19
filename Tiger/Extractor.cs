@@ -31,6 +31,8 @@ namespace Tiger
         public Dictionary<uint, List<Package>> packages_id_lookup_table = new Dictionary<uint, List<Package>>();
         public bool verbouse { get; set; }
 
+        private Dictionary<uint, string> string_lookup_table_holder;
+
         /// <summary>
         /// The main constructor to the extractor class
         /// </summary>
@@ -40,8 +42,6 @@ namespace Tiger
         {
             Logger.logging_level = LoggerLevels.MediumVerbouse;
             this.PackagesPath = packages_path;
-
-            master_packages_names();
 
             //Check if the depenedencies are present, and if they're not all present, then extract them
             List<string> dependencies = new List<string>() {"oo2core_8_win64.dll", "RawtexCmd.exe", "texconv.exe", "packed_codebooks.bin", "packed_codebooks_aoTuV_603.bin", "librevorb.dll" };
@@ -282,7 +282,7 @@ namespace Tiger
                 throw new DirectoryNotFoundException($"The directiory '{extraction_path}' is not found");
             }
 
-            Directory.CreateDirectory(Path.Join(extraction_path, package.name));
+            Directory.CreateDirectory(Path.Join(extraction_path, package.no_patch_id_name));
 
             Logger.log($"Extracting package: {package.name}", LoggerLevels.HighVerbouse);
             for(int entry_index = 0; entry_index< package.entry_table().Count(); entry_index++ )
@@ -312,6 +312,37 @@ namespace Tiger
         }
         #endregion
 
+        /// <summary>
+        /// A method used to get the string lookup table. This method takes care of caching so that the
+        /// table does not have to be generated multiple times and only needs a single initialization
+        /// </summary>
+        /// <returns>A dictionary of the string hashes and the strings</returns>
+        public Dictionary<uint, string> string_lookup_table()
+        {
+            if (string_lookup_table_holder != null)
+                return string_lookup_table_holder;
 
+            Logger.log("Stirng lookup table initialization beginning", LoggerLevels.HighVerbouse);
+
+            Dictionary<uint, string> strings_dict = new Dictionary<uint, string>();
+            foreach(KeyValuePair<string, List<Package>> package_name_package_pair in packages_lookup_table)
+            {
+                Package master_package = package_name_package_pair.Value[^1];
+                for(int i = 0; i<master_package.entry_table().Count; i++)
+                {
+                    if (master_package.entry_table()[i].entry_a != (uint)Blocks.Type.StringReference)
+                        continue;
+
+                    byte[] dictionary_blob = new Parsers.StringReferenceParser(master_package, i, this).Parse().data;
+                    Dictionary<uint, string> package_strings_dict = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<uint, string>>(System.Text.Encoding.UTF8.GetString(dictionary_blob));
+                    foreach (KeyValuePair<uint, string> hash_string_pair in package_strings_dict)
+                        strings_dict[hash_string_pair.Key] = hash_string_pair.Value;
+                }
+            }
+
+            Logger.log("String lookup table initialization completed", LoggerLevels.HighVerbouse);
+            string_lookup_table_holder = strings_dict;
+            return strings_dict;
+        }
     }
 }

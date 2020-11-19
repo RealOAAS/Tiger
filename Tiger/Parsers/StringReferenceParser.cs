@@ -34,6 +34,26 @@ namespace Tiger.Parsers
         }
 
         /// <summary>
+        /// A constructor to the string references parser.
+        /// </summary>
+        /// <param name="entry_reference">An entry reference object containing information on the package and entry containing the entry</param>
+        /// <param name="extractor">An extractor object passed to this class to perform some extraction of other needed files</param>
+        /// <remarks>
+        /// The extractor object passed to this class is typically the extractor object calling this class in the first place.
+        /// This is done to reduce the latency and the initialization that each extractor must go through.
+        /// </remarks>
+        public StringReferenceParser(Tiger.Utils.EntryReference entry_reference, Tiger.Extractor extractor)
+        {
+            this.package = extractor.package(entry_reference.package_id);
+            this.entry = this.package.entry_table()[(int)entry_reference.entry_index];
+            this.extractor = extractor;
+            this.entry_index = entry_reference.entry_index;
+
+            if (this.entry.entry_a != (uint)Tiger.Blocks.Type.StringReference)
+                throw new Tiger.Parsers.InvalidTypeError($"Expected a string refernces of the block type 0x{ ((uint)Tiger.Blocks.Type.StringReference).ToString("X8") } but recieved a block of type 0x{this.entry.entry_a.ToString("X8")}");
+        }
+
+        /// <summary>
         /// A parser method used to parse the String reference files and return them as a dictionary
         /// </summary>
         /// <returns>A ParsedFile object of a json object</returns>
@@ -54,7 +74,7 @@ namespace Tiger.Parsers
                     string[] strings = Tiger.Utils.dictionary_bytes_to_list((new Tiger.Parsers.StringBankParser(extractor.package(english_string_bank_reference.package_id), (int)english_string_bank_reference.entry_index, extractor)).Parse().data);
 
                     mem_stream.Seek((int)hashes_header.offset + 0x10, SeekOrigin.Begin);
-                    for (int i = 0; i< (int)hashes_header.offset; i++)
+                    for (int i = 0; i< (int)hashes_header.count; i++)
                     {
                         string_dictionary[bin_reader.ReadUInt32()] = strings[i];
                     }

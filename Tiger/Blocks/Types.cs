@@ -19,5 +19,11 @@ namespace Tiger.Blocks
         //A file that makes a reference to an OTF font which provides a name for it and
         //some metadata on the font
         FontReference = 0x80803C12,
+
+        // A class made to parse AudioBanks. AudioBanks as of Destiny 2; Beyond Light
+        // Are blocks (type 8 entries) of the type 0x808097b8. These files contain a
+        // number of hashes that make references to audios and their string subtitles,
+        // as well as their narrators.
+        AudioBank = 0x808097B8
     }
 }

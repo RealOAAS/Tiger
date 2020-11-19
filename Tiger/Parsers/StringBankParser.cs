@@ -42,6 +42,26 @@ namespace Tiger.Parsers
         }
 
         /// <summary>
+        /// A constructor to the string references parser.
+        /// </summary>
+        /// <param name="entry_reference">An entry reference object containing information on the package and entry containing the entry</param>
+        /// <param name="extractor">An extractor object passed to this class to perform some extraction of other needed files</param>
+        /// <remarks>
+        /// The extractor object passed to this class is typically the extractor object calling this class in the first place.
+        /// This is done to reduce the latency and the initialization that each extractor must go through.
+        /// </remarks>
+        public StringBankParser(Tiger.Utils.EntryReference entry_reference, Tiger.Extractor extractor)
+        {
+            this.package = extractor.package(entry_reference.package_id);
+            this.entry = this.package.entry_table()[(int)entry_reference.entry_index];
+            this.extractor = extractor;
+            this.entry_index = entry_reference.entry_index;
+
+            if (this.entry.entry_a != (uint)Tiger.Blocks.Type.StringBank)
+                throw new Tiger.Parsers.InvalidTypeError($"Expected a string bank of the block type 0x{ ((uint)Tiger.Blocks.Type.StringBank).ToString("X8") } but recieved a block of type 0x{this.entry.entry_a.ToString("X8")}");
+        }
+
+        /// <summary>
         /// A method used to parse the string banks and return it it as a ParsedFile
         /// </summary>
         /// <returns>A ParsedFile object containing the strings in the string bank</returns>
@@ -120,7 +140,7 @@ namespace Tiger.Parsers
                 {
                     StringBuilder string_builder = new StringBuilder();
 
-                    int str_count = single_count == 0 ? 1 : single_count;
+                    int str_count = single_count == 0 ? 0 : single_count;
                     for (int i = 0; i < str_count; i++)
                     {
                         string_builder.Append(strings_copy[0]);

@@ -122,6 +122,7 @@ namespace Tiger
         {
             public uint package_id { get; private set; }
             public uint entry_index { get; private set; }
+            public uint entry_a { get; private set; }
 
             /// <summary>
             /// A constructor that is used to initialize a new EntryReference. It takes an entry_a and initializes a new
@@ -130,6 +131,8 @@ namespace Tiger
             /// <param name="entry_a">A uint of the entry_a data. Entry_a is uint32_t hash which makes references to entries</param>
             public EntryReference(uint entry_a)
             {
+                this.entry_a = entry_a;
+
                 entry_index = entry_a & 0x1FFF;
                 package_id = (entry_a >> 13) & 0x3FF;
                 uint reference_unknown_id = (entry_a >> 23) & 0x3FF;
@@ -153,6 +156,108 @@ namespace Tiger
             string dictionary_string = Encoding.UTF8.GetString(dictionary_data);
             Dictionary<int, string> dictionary = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<int, string>>(dictionary_string);
             return dictionary.Select( p => p.Value).ToArray();
+        }
+
+        /// <summary>
+        /// A class that implements methods from the BoyerMoore algorithim to search for a needle in a haystack
+        /// </summary>
+        public class BoyerMoore
+        {
+            /// <summary>
+            /// A method used to find the index of a needle in haystack
+            /// </summary>
+            /// <param name="haystack">The large byte collection to search for bytes in</param>
+            /// <param name="needle">The set of bytes to search for</param>
+            /// <returns>The index of the needle in the haystack</returns>
+            public static int IndexOf(byte[] haystack, byte[] needle)
+            {
+                if (needle.Length == 0)
+                {
+                    return 0;
+                }
+
+                int[] charTable = MakeCharTable(needle);
+                int[] offsetTable = MakeOffsetTable(needle);
+                for (int i = needle.Length - 1; i < haystack.Length;)
+                {
+                    int j;
+                    for (j = needle.Length - 1; needle[j] == haystack[i]; --i, --j)
+                    {
+                        if (j == 0)
+                        {
+                            return i;
+                        }
+                    }
+
+                    i += Math.Max(offsetTable[needle.Length - 1 - j], charTable[haystack[i]]);
+                }
+
+                return -1;
+            }
+
+            private static int[] MakeCharTable(byte[] needle)
+            {
+                const int ALPHABET_SIZE = 256;
+                int[] table = new int[ALPHABET_SIZE];
+                for (int i = 0; i < table.Length; ++i)
+                {
+                    table[i] = needle.Length;
+                }
+
+                for (int i = 0; i < needle.Length - 1; ++i)
+                {
+                    table[needle[i]] = needle.Length - 1 - i;
+                }
+
+                return table;
+            }
+
+            private static int[] MakeOffsetTable(byte[] needle)
+            {
+                int[] table = new int[needle.Length];
+                int lastPrefixPosition = needle.Length;
+                for (int i = needle.Length - 1; i >= 0; --i)
+                {
+                    if (IsPrefix(needle, i + 1))
+                    {
+                        lastPrefixPosition = i + 1;
+                    }
+
+                    table[needle.Length - 1 - i] = lastPrefixPosition - i + needle.Length - 1;
+                }
+
+                for (int i = 0; i < needle.Length - 1; ++i)
+                {
+                    int slen = SuffixLength(needle, i);
+                    table[slen] = needle.Length - 1 - i + slen;
+                }
+
+                return table;
+            }
+
+            private static bool IsPrefix(byte[] needle, int p)
+            {
+                for (int i = p, j = 0; i < needle.Length; ++i, ++j)
+                {
+                    if (needle[i] != needle[j])
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            private static int SuffixLength(byte[] needle, int p)
+            {
+                int len = 0;
+                for (int i = p, j = needle.Length - 1; i >= 0 && needle[i] == needle[j]; --i, --j)
+                {
+                    len += 1;
+                }
+
+                return len;
+            }
         }
     }
 }

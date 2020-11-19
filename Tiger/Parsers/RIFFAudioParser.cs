@@ -42,6 +42,26 @@ namespace Tiger.Parsers
         }
 
         /// <summary>
+        /// A constructor to the string references parser.
+        /// </summary>
+        /// <param name="entry_reference">An entry reference object containing information on the package and entry containing the entry</param>
+        /// <param name="extractor">An extractor object passed to this class to perform some extraction of other needed files</param>
+        /// <remarks>
+        /// The extractor object passed to this class is typically the extractor object calling this class in the first place.
+        /// This is done to reduce the latency and the initialization that each extractor must go through.
+        /// </remarks>
+        public RIFFAudioParser(Tiger.Utils.EntryReference entry_reference, Tiger.Extractor extractor)
+        {
+            this.package = extractor.package(entry_reference.package_id);
+            this.entry = this.package.entry_table()[(int)entry_reference.entry_index];
+            this.extractor = extractor;
+            this.entry_index = entry_reference.entry_index;
+
+            if (entry.type != 26 || entry.subtype != 7)
+                throw new Tiger.Parsers.InvalidTypeError($"Expected a RIFF file of the entry type 26 and subtype 7. Instead, recieved an entry of type {entry.type} and subtype {entry.subtype}");
+        }
+
+        /// <summary>
         /// A method used to parse RIFF WEM files and then return it as a ParsedFile with .ogg data
         /// </summary>
         /// <returns>A ParsedFile object of the process RIFF data as .ogg files</returns>
