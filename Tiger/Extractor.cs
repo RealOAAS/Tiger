@@ -86,6 +86,16 @@ namespace Tiger
         }
 
         /// <summary>
+        /// A method used to return the master packages as an IEnumerable to allow iteration over packages
+        /// </summary>
+        /// <returns>A generator or an IEnumerable of Package objects</returns>
+        public IEnumerable<Package> master_packages_stream()
+        {
+            foreach (KeyValuePair<uint, List<Package>> id_package_pair in packages_id_lookup_table)
+                yield return id_package_pair.Value[^1];
+        }
+
+        /// <summary>
         /// A method used to generate the packages dictionary with is a dictionary that contains all of the packages
         /// Initialized and ready to be used. This is done so that a package does not need to be initialized multiple
         /// times when being used

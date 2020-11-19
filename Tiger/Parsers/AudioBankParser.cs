@@ -22,7 +22,8 @@ namespace Tiger.Parsers
     /// </summary>
     public class AudioBankParser
     {
-        private static byte[] needle = new byte[] { 0x2D, 0x97, 0x80, 0x80 };
+        private static byte[] needle1 = new byte[] { 0x2D, 0x97, 0x80, 0x80 };
+        private static byte[] needle2 = new byte[] { 0x33, 0x97, 0x80, 0x80 };
 
         public Package package { get; private set; }
         public Formats.Entry entry { get; private set; }
@@ -101,22 +102,38 @@ namespace Tiger.Parsers
                         UInt32 block_header = bin_reader.ReadUInt32();
 
                         List<AudioBankEntryParser.AudioBankEntry> audio_entries;
-                        if (block_header == 0x80809733)
-                            audio_entries = new List<AudioBankEntryParser.AudioBankEntry>() { new AudioBankEntryParser(audio_bank_data[(Index)mem_stream.Position..(Index)(mem_stream.Position + 0x68)]).Parse() };
-                        else if (block_header == 0x8080972D)
-                            audio_entries = new AudioBankCollectionsParser(audio_bank_data[(Index)mem_stream.Position..]).Parse();
-                        else if(block_header == 0x8080972A)
+                        try
                         {
-                            int index_of_collection = Tiger.Utils.BoyerMoore.IndexOf(audio_bank_data[(Index)mem_stream.Position..], needle);
-                            audio_entries = new AudioBankCollectionsParser(audio_bank_data[(Index)(mem_stream.Position + index_of_collection + 0x4)..]).Parse();
+                            if (block_header == 0x80809733)
+                                audio_entries = new List<AudioBankEntryParser.AudioBankEntry>() { new AudioBankEntryParser(audio_bank_data[(Index)mem_stream.Position..(Index)(mem_stream.Position + 0x68)]).Parse() };
+                            else if (block_header == 0x8080972D)
+                                audio_entries = new AudioBankCollectionsParser(audio_bank_data[(Index)mem_stream.Position..]).Parse();
+                            else if (block_header == 0x8080972A)
+                            {
+                                int index_of_collection = Tiger.Utils.BoyerMoore.IndexOf(audio_bank_data[(Index)mem_stream.Position..], needle1);
+                                if (index_of_collection != -1)
+                                    audio_entries = new AudioBankCollectionsParser(audio_bank_data[(Index)(mem_stream.Position + index_of_collection + 0x4)..]).Parse();
+                                else
+                                {
+                                    int index_of_audio_entry = Tiger.Utils.BoyerMoore.IndexOf(audio_bank_data[(Index)mem_stream.Position..], needle2);
+                                    audio_entries = new List<AudioBankEntryParser.AudioBankEntry>() { new AudioBankEntryParser(audio_bank_data[(Index)(mem_stream.Position + index_of_audio_entry + 0x4)..(Index)(mem_stream.Position + index_of_audio_entry + 0x4 + 0x68)]).Parse() };
+                                }
+                            }
+                            else
+                                throw new Exception($"Invalid Header type found at the offset {hash_index_pair.Value - 4}");
                         }
-                        else
-                            throw new Exception($"Invalid Header type found at the offset {hash_index_pair.Value - 4}");
+                        catch (EndOfStreamException ex)
+                        {
+                            continue;
+                        }
 
                         //Working on the audio_entries obtained from the audio_bank
                         List<Dictionary<string, string>> parsed_audio_entries = new List<Dictionary<string, string>>();
                         foreach(AudioBankEntryParser.AudioBankEntry audio_entry in audio_entries)
                         {
+                            if (audio_entry.number_of_audios == 0)
+                                continue;
+
                             string narrator_name = extractor.string_lookup_table()[audio_entry.narrator_string_hash];
 
                             //Working on getting the string
@@ -264,6 +281,9 @@ namespace Tiger.Parsers
                 {
                     get
                     {
+                        if (number_of_audios_1 == 0 && number_of_audios_2 == 0)
+                            return 0;
+
                         return (audio_reference == audio_reference_1 ? number_of_audios_1 : number_of_audios_2);
                     }
                 }
@@ -339,16 +359,26 @@ namespace Tiger.Parsers
                             mem_stream.Seek(0x20, SeekOrigin.Current);
                             header = new Blocks.Header(bin_reader.ReadUInt64(), (UInt64)mem_stream.Position + bin_reader.ReadUInt64());
                             Debug.Assert(header.count < 10);
+
+                            if (header.count == 0)
+                                return audio_bank_entries;
                         }
 
                         mem_stream.Seek((uint)header.offset + 0x10, SeekOrigin.Begin);
                         uint offset = bin_reader.ReadUInt32();
 
-                        mem_stream.Seek(offset - 4, SeekOrigin.Current);
-                        for(int i = 0; i<(int)header.count; i++)
+                        try
                         {
-                            audio_bank_entries.Add(new AudioBankEntryParser(this.audio_bank_bytes[(Index)mem_stream.Position..(Index)(mem_stream.Position + 0x68)]).Parse());
-                            mem_stream.Seek(0x70, SeekOrigin.Current);
+                            mem_stream.Seek(offset - 4, SeekOrigin.Current);
+                            for (int i = 0; i < (int)header.count; i++)
+                            {
+                                audio_bank_entries.Add(new AudioBankEntryParser(this.audio_bank_bytes[(Index)mem_stream.Position..(Index)(mem_stream.Position + 0x68)]).Parse());
+                                mem_stream.Seek(0x70, SeekOrigin.Current);
+                            }
+                        }
+                        catch
+                        {
+                            return audio_bank_entries;
                         }
                     }
                 }
