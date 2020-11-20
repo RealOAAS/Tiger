@@ -199,8 +199,8 @@ struct SPkgBlock_80809733 {
     //and who the person speaking is. Typically found in files
     //of the block type 0x808097b8
 
-    uint32_t field_0;           //unknown
     uint32_t audio_hash;        //A unique hash for this audio
+    uint32_t conversation_hash; //A unique hash for this conversation
     
     uint32_t field_08;          //unknown
     uint32_t field_0c;          //unknown
