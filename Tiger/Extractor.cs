@@ -32,6 +32,7 @@ namespace Tiger
         public bool verbouse { get; set; }
 
         private Dictionary<uint, string> string_lookup_table_holder;
+        private List<Dictionary<uint, string>> investment_globals_strings_holder;
 
         /// <summary>
         /// The main constructor to the extractor class
@@ -353,6 +354,24 @@ namespace Tiger
             Logger.log("String lookup table initialization completed", LoggerLevels.HighVerbouse);
             string_lookup_table_holder = strings_dict;
             return strings_dict;
+        }
+
+        /// <summary>
+        /// A method used to get the indexed investment globals strings
+        /// </summary>
+        /// <returns> A list which indexes investment global strings  </returns>
+        public List<Dictionary<uint, string>> investment_globals_strings()
+        {
+            if (investment_globals_strings_holder != null)
+                return investment_globals_strings_holder;
+
+            List<Utils.EntryReference> index_of_indexer = Utils.find_blocks((uint)Blocks.Type.StringReferenceIndexer, this, "investment");
+            System.Diagnostics.Debug.Assert(index_of_indexer.Count == 1);
+
+            Dictionary<uint, Dictionary<uint, string>> parsed_indexer = new Tiger.Parsers.StringReferenceIndexerParser(index_of_indexer[0], this).ParseDeserialize();
+
+            investment_globals_strings_holder = parsed_indexer.Select(p => p.Value).ToList();
+            return investment_globals_strings_holder;
         }
     }
 }

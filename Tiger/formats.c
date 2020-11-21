@@ -230,7 +230,35 @@ struct SPkgBlock_80809733 {
 
 struct SPkgBlock_80809728 {
     uint64_t audio_hash;
-}
+};
+
+struct SPkgBlock_80807667{
+    //Typically found in 0x80807663
+    uint32_t sanbox_pattern_hash;   //As foudn in the API
+    uint32_t unknown_hash;
+};
+
+struct SPkgBlock_808076AE {
+    //Typically found in 0x808076AA
+    uint32_t sandbox_perk_hash;     //As found in the API
+    uint32_t unknown_hash;
+    uint32_t unknown_number;
+};
+
+struct SPkgBlock_80807904 {
+    //Typically found in 0x808078FE
+    uint32_t trait_catagory_hash;   //As found in the api
+    uint32_t unknown_number;
+};
+
+struct SPkgBlock_8080799B {
+    //Typically found in 0x80807997
+    uint64_t inventory_hash;        //As found in the api
+    uint64_t padding;
+
+    ReferenceHash hash;             //A reference hash to 0x8080799D
+    uint64_t padding;
+};
 
 /*
 NOTES:

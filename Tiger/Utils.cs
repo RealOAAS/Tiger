@@ -312,5 +312,31 @@ namespace Tiger
 
             return new EntryReference(entry_a);
         }
+
+        /// <summary>
+        /// A method used to find a specific block type in the entry table of packages. Useful when finding a list of all of the
+        /// important files needed for the decryption and analysis. 
+        /// </summary>
+        /// <param name="search_block_type">The block type to search for. Example: 0x80809337</param>
+        /// <param name="extractor">An extractor object used in this search</param>
+        /// <param name="specific_packages">An optional argument. When this argument is set to a string value, then only packages with 'specific_packages' in their name will be searched</param>
+        /// <returns></returns>
+        public static List<EntryReference> find_blocks(uint search_block_type, Extractor extractor, string specific_packages = null)
+        {
+            List<EntryReference> found = new List<EntryReference>();
+
+            foreach(Package package in extractor.master_packages_stream())
+            {
+                if (specific_packages != null && !package.no_patch_id_name.Contains(specific_packages))
+                    continue;
+
+                List<Formats.Entry> entry_table = package.entry_table();
+                for(int i = 0; i<entry_table.Count; i++)
+                    if (entry_table[i].entry_a == search_block_type)
+                        found.Add(generate_reference_hash(package.package_id, (uint)i));
+            }
+
+            return found;        
+        }
     }
 }

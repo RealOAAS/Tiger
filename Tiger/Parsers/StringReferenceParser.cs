@@ -83,5 +83,16 @@ namespace Tiger.Parsers
 
             return new ParsedFile("json", Encoding.UTF8.GetBytes(Newtonsoft.Json.JsonConvert.SerializeObject(string_dictionary)), package.package_id, entry_index);
         }
+
+        /// <summary>
+        /// A method that Parses the file but does not serialize it and returns it
+        /// as an appropriate structure for the data
+        /// </summary>
+        /// <returns>A dictionary of the string hash and the string</returns>
+        public Dictionary<uint, string> ParseDeserialize()
+        {
+            ParsedFile file = this.Parse();
+            return Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<uint, string>>(Encoding.UTF8.GetString(file.data));
+        }
     }
 }

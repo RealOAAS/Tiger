@@ -16,6 +16,11 @@ namespace Tiger.Blocks
         //langiage and it also provides the strings with their hashes.
         StringReference = 0x808099EF,
 
+        //String References in investment_global packages are indexed and the string hashes
+        //included in them can overlap. Thus, this file provides the indexing for the files
+        //or string references
+        StringReferenceIndexer = 0x80805A09,
+
         //A file that makes a reference to an OTF font which provides a name for it and
         //some metadata on the font
         FontReference = 0x80803C12,
