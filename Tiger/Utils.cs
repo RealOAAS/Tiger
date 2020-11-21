@@ -140,6 +140,16 @@ namespace Tiger
                 uint flags = reference_unknown_id & 0x3;
                 package_id = (flags == 1) ? package_id : package_id | (uint)((int)0x100 << (int)flags);
             }
+
+            /// <summary>
+            /// A method used to get the string representation of where this entry is at in the entry table.
+            /// Relies on the method Tiger.Utils.entry_name.
+            /// </summary>
+            /// <returns> A string representation of where the entry is at. </returns>
+            public override string ToString()
+            {
+                return Tiger.Utils.entry_name(package_id, entry_index);
+            }
         }
 
         /// <summary>
@@ -258,6 +268,49 @@ namespace Tiger
 
                 return len;
             }
+        }
+    
+        /// <summary>
+        /// A method used to take in a package id and an entry index and then return a hash that points
+        /// or specifies this entry in the form of an EntryReference object. The hash is the store in
+        /// the EntryReference.entry_a
+        /// </summary>
+        /// <param name="package_id">The package ID of the package storing the entry</param>
+        /// <param name="entry_index">The index that the current entry is at</param>
+        /// <returns> An EntryReference object of the details on the hash of this entry </returns>
+        /// <remarks>
+        /// Due to how Bungie generates these hashes, this method might have some errors sometimes. The main source
+        /// of error that could be in this function has to do with the 'reference_unknown_id'. So far, only the last
+        /// two bits of this variable is understood (which is whether to or by 0x400 or 0x800). The other ones are not
+        /// undersood and this method assumes them to be equal to 0x100. When they're not equal to 0x100 the hash that 
+        /// this function generates will no longer be accurate.
+        /// </remarks>
+        public static Tiger.Utils.EntryReference generate_reference_hash(uint package_id, uint entry_index)
+        {
+            //EntryA: CCCCCCCCCBBBBBBBBBBAAAAAAAAAAAAA
+
+            // A:RefID: EntryA & 0x1FFF
+            // B:RefPackageID: (EntryA >> 13) & 0x3FF
+            // C:RefUnkID: (EntryA >> 23)
+
+            uint last_two_flags;
+            if (package_id >= 0x800)
+            {
+                last_two_flags = 3;
+                package_id -= 0x800;
+            }
+            else if (package_id >= 0x400)
+            {
+                last_two_flags = 2;
+                package_id -= 0x400;
+            }
+            else
+                last_two_flags = 1;
+
+            uint reference_unknown_id = 0x100 + last_two_flags;
+            uint entry_a = (reference_unknown_id << 23) + (package_id << 13) + entry_index;
+
+            return new EntryReference(entry_a);
         }
     }
 }

@@ -32,7 +32,7 @@ namespace Tiger
         /// <param name="level"> The level that the message is to be logged at </param>
         public static void log(string message, LoggerLevels level)
         {
-            if (logging_level != LoggerLevels.Disabled && logging_level <= level)
+            if (logging_level != LoggerLevels.Disabled && logging_level >= level)
             {
                 string TimeString = DateTime.Now.ToString("dd/MMM/yyyy hh:mm:ss tt");
                 string logging_message = $"[{TimeString}]: { (level == LoggerLevels.HighVerbouse ? "" : (new String('\t', (int)level - 1) + "|-")) }{message}";

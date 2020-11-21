@@ -38,9 +38,9 @@ namespace Tiger
         /// </summary>
         /// <param name="packages_path">The path to the packages</param>
         /// <param name="verbouse">Allows for the extractor to print to the screen</param>
-        public Extractor(string packages_path, bool verbouse)
+        public Extractor(string packages_path, LoggerLevels logging_level)
         {
-            Logger.logging_level = LoggerLevels.MediumVerbouse;
+            Logger.logging_level = logging_level;
             this.PackagesPath = packages_path;
 
             //Check if the depenedencies are present, and if they're not all present, then extract them
