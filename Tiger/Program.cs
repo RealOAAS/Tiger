@@ -13,7 +13,7 @@ namespace Tiger
         {
             string destiny_path = @"C:\Program Files (x86)\Steam\steamapps\common\Destiny 2\packages";
             string extraction_path = @"C:\D2PkgExtractionPath";
-            Extractor extractor = new Extractor(destiny_path, LoggerLevels.Disabled);
+            Extractor extractor = new Extractor(destiny_path, LoggerLevels.HighVerbouse);
         }
     }
 }
