@@ -1,6 +1,9 @@
 # Introduction
 Tiger is a project entirely written in C# and its main purpose is to analyse the files of Destiny 2 and parse many of them. As the game progressed and grows, this implementation of extractor will grow and improve as well.
 
+# Note
+This project uses embedded resources for dependencies. An example of those would be oodle, RawTex as well as Librevorb.
+
 # Getting Started 
 There are a lot of things that this extractor can do. Lets walk through a couple of them one by one and then hopefully by the end of these examples you will have a solid idea on how this library can be used.
 
@@ -96,3 +99,99 @@ The above code checks for the type of the entry and if it matches the types impl
 
   * Deserialize the object which will be easy since most of them are dictionaries anyway and Newtonsoft has all of the deserizalization functionality needed.
   * Use the function `ParseDeserialize()` in the specific parser that you're using. As of now, not all of the parsers include this method. However, in the future, it will be extended and included in all of the parsers so that this method is the main processing method and `Parse()` relies on it.
+
+With the code shwon above, we were able to just extract entires of the type 8 or 16. We can then extend this even further to include the other known types as well. The following code can do that
+```cs
+using Tiger;
+using System;
+using System.IO;
+
+namespace Program
+{
+    public static class Program
+    {
+        public static void Main(string[] args)
+        {
+            string packages_path = @"C:\Program Files (x86)\Steam\steamapps\common\Destiny 2\packages";
+            string output_path = @"C:\DestinyExtractionPath";
+            Extractor extractor = new Extractor(packages_path, LoggerLevels.HighVerbouse);
+
+            foreach (Package package in extractor.master_packages_stream())
+            {
+                for (int entry_index = 0; entry_index < package.entry_table().Count; entry_index++)
+                {
+                    Parsers.ParsedFile file;
+
+                    Formats.Entry entry = package.entry_table()[entry_index];
+                    switch (entry.type)
+                    {
+                        case 8:
+                        case 16:
+                            switch (entry.entry_a)
+                            {
+                                case (uint)Blocks.Type.StringBank:
+                                    file = new Parsers.StringBankParser(package, entry_index, extractor).Parse();
+                                    break;
+                                case (uint)Blocks.Type.StringReference:
+                                    file = new Parsers.StringReferenceParser(package, entry_index, extractor).Parse();
+                                    break;
+                                case (uint)Blocks.Type.StringReferenceIndexer:
+                                    file = new Parsers.StringReferenceIndexerParser(package, entry_index, extractor).Parse();
+                                    break;
+                                case (uint)Blocks.Type.AudioBank:
+                                    file = new Parsers.AudioBankParser(package, entry_index, extractor).Parse();
+                                    break;
+                                case (uint)Blocks.Type.FontReference:
+                                    file = new Parsers.FontReferenceParser(package, entry_index, extractor).Parse();
+                                    break;
+                            }
+                            break;
+
+                        case 32:
+                        case 40:
+                        case 48:
+                            switch(entry.subtype)
+                            {
+                                case 1:
+                                    file = new Parsers.TextureParser(package, entry_index, extractor).Parse();
+                                    break;
+                            }
+                            break;
+
+                        case 26:
+                            switch(entry.subtype)
+                            {
+                                case 7:
+                                    file = new Parsers.RIFFAudioParser(package, entry_index, extractor).Parse();
+                                    break;
+                            }
+                            break;
+                    }
+
+                    if (file != null)
+                        file.WriteToFile(output_path);
+                }
+            }
+        }
+    }
+}
+```
+
+## Other examples
+There are other examples of how to utilize this library which will be added soon. In the mean time, you can take a look at the `Tiger.Analysis` namespace for some analysis methods.
+
+# Contributing
+
+There are many ways to contribute to this project and there are certainly a lot of things to be done. One of the ways that you can contribute is by writing your own parsers and adding them to the `Tiger.Parsers` namespace or by improving already made parsers. Its important to note that each parser should have 
+ - A constructor that takes in a `Package` object, `Int` entry_index, and an `Tiger.Extractor` object. 
+ - A constructor that takes in a `Tiger.Utils.EntryReference`, and an `Tiger.Extractor` object. 
+ - A `Parse()` method that returns a `Tiger.Parsers.ParsedFile` object of the parsed data serialized and read to be written to a file.
+ - Ideally it should also have a `ParseDeserialize()` to return a deserialized object.
+
+When adding a parser, especially to a block of type 8 or 16, please add its hash to `Blocks.Types` to make it easier to change when updates happen. Other than that, have fun, go ham!
+
+# Improvements
+There are a number of things that can be improved about this extractor, feel free to tackle any of them
+ - Changing the `Tiger.Extractor` to become a `static` class and have an initialize method to perform all of the needed initialization.
+ - Using interfaces in implementing the parsers in `Tiger.Parsers`
+ - Find a way to parse `Tiger.Blocks.Types.AudioBanks` properly without the need to look for specific hashes for header and so on
