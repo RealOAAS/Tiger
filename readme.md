@@ -1,0 +1,1 @@
+Tiger is a project entirely written in C# made to explore the files in Destiny 2, analyze them, and parse the file types
