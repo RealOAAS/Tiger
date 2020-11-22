@@ -25,12 +25,20 @@
 
   <ItemGroup>
     <Folder Include="Formats\" />
+    <Folder Include="Parsers\USMParserDependencies\" />
     <Folder Include="Parsers\RIFFParserDependencies\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="PBDesk.JSUtils" Version="2013.10.16" />
     <PackageReference Include="Security.Cryptography" Version="1.7.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="jsutil">
+      <HintPath>libs\jsutil.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
