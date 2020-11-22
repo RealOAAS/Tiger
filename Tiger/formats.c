@@ -107,6 +107,11 @@ typedef struct ReferenceHash {
     uint32_t entry_index : 13;
 }ReferenceHash;
 
+typedef struct BlockHeader {
+    uint64_t count;
+    uint64_t offset;
+}BlockHeader;
+
 //Entry Types and Subtypes
 struct SPkgEntry_24 {
     // A font file
@@ -258,6 +263,14 @@ struct SPkgBlock_8080799B {
 
     ReferenceHash hash;             //A reference hash to 0x8080799D
     uint64_t padding;
+};
+
+struct SPkgBlock_80809ED6 {
+    //Typically found in files of the type 0x80809ED2
+
+    uint64_t package_id;
+    uint64_t padding[2];
+    BlockHeader header;
 };
 
 /*
