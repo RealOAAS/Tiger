@@ -4,8 +4,6 @@ VisualStudioVersion = 16.0.30711.63
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tiger", "Tiger\Tiger.csproj", "{B5AEAAE7-DCB2-4997-94ED-D9110B101DBA}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TigerViewer", "TigerViewer\TigerViewer.csproj", "{BF68C611-00F2-4E23-A429-A596E7B7C135}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -16,10 +14,6 @@ Global
 		{B5AEAAE7-DCB2-4997-94ED-D9110B101DBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B5AEAAE7-DCB2-4997-94ED-D9110B101DBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B5AEAAE7-DCB2-4997-94ED-D9110B101DBA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BF68C611-00F2-4E23-A429-A596E7B7C135}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BF68C611-00F2-4E23-A429-A596E7B7C135}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BF68C611-00F2-4E23-A429-A596E7B7C135}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BF68C611-00F2-4E23-A429-A596E7B7C135}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
