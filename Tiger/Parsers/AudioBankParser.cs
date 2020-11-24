@@ -97,12 +97,15 @@ namespace Tiger.Parsers
                         string narrator_name;
                         try
                         {
-                            narrator_name = extractor.string_lookup_table()[audio_entry.narrator_string_hash];
+                            narrator_name = extractor.client_statup_strings()[audio_entry.narrator_string_hash];
                         }
                         catch
                         {
                             narrator_name = "unknown";
                         }
+
+                        if(narrator_name.Length > 20)
+                            Console.WriteLine("HERE");
 
                         //Working on getting the string
                         string transcript = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<uint, string>>(Encoding.UTF8.GetString(new Tiger.Parsers.StringReferenceParser(audio_entry.subtitle_string_localizer_reference, extractor).Parse().data))[audio_entry.subtitle_stirng_hash];
@@ -110,6 +113,7 @@ namespace Tiger.Parsers
                         //Getting the audio data
                         byte[] audio_ogg_data;
                         byte[] audio_reference_data = extractor.extract_entry_data(audio_entry.audio_reference).data;
+                        Tiger.Utils.EntryReference audio_reference;
                         using (MemoryStream audio_mem_stream = new MemoryStream(audio_reference_data))
                         {
                             using (BinaryReader audio_bin_reader = new BinaryReader(audio_mem_stream))
@@ -119,7 +123,7 @@ namespace Tiger.Parsers
                                 Debug.Assert(audio_header.count == 1);
 
                                 audio_mem_stream.Seek((uint)audio_header.offset + 0x10, SeekOrigin.Begin);
-                                Tiger.Utils.EntryReference audio_reference = new Utils.EntryReference(audio_bin_reader.ReadUInt32());
+                                audio_reference = new Utils.EntryReference(audio_bin_reader.ReadUInt32());
 
                                 try
                                 {
@@ -140,6 +144,7 @@ namespace Tiger.Parsers
                                 {"transcript hash", audio_entry.narrator_string_hash.ToString()},
                                 {"transcript string", transcript },
                                 {"audio hash", audio_entry.audio_hash.ToString() },
+                                {"audio reference hash", audio_reference.entry_a.ToString() },
                                 {"conversation hash", audio_entry.conversation_hash.ToString() },
                                 {"audio ogg data", audio_ogg_data_base64 },
                             };

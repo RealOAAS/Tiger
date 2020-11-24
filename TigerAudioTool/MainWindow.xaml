@@ -1,0 +1,43 @@
+﻿<Window x:Class="TigerAudioTool.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TigerAudioTool"
+        mc:Ignorable="d"
+        Title="MainWindow" ResizeMode="NoResize" Height="640" Width="960" Background="Black">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="157*"/>
+            <RowDefinition Height="155*"/>
+        </Grid.RowDefinitions>
+        <Button Content="Browse" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Background="#FF393939" Foreground="White" BorderBrush="{x:Null}" Width="55" Height="24" Click="browse_button_onClick"/>
+        <TextBox Name="destiny_path_textbox" Margin="10,10,70,0" Text="Path to Destiny 2.exe" TextWrapping="Wrap" VerticalAlignment="Top" Height="24" Background="#FF393939" BorderBrush="{x:Null}" Foreground="White" IsEnabled="False"/>
+        <GroupBox Header="Logging Window" Margin="0,157,0,0" HorizontalAlignment="Center" Width="940" Height="143" VerticalAlignment="Top" Grid.Row="1">
+            <GroupBox.HeaderTemplate>
+                <DataTemplate>
+                    <Grid Width="{Binding ElementName=groupBox1, Path=ActualWidth}" Margin="-10, 0, -10, 0" >
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
+                        <Label Content="{Binding}" HorizontalAlignment="Stretch" Grid.Column="0" Height="20" Padding="0, 0, 0, 0" Margin="10" Foreground="White"/>
+                    </Grid>
+                </DataTemplate>
+            </GroupBox.HeaderTemplate>
+            <ScrollViewer Name="logging_box_scroller">
+                <TextBlock x:Name="logging_box" Margin="0,-14,-2,-1" Text="" TextWrapping="Wrap" FontFamily="Consolas" Foreground="White" Background="{x:Null}" FontSize="10" IsEnabled="False" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Auto"/>
+            </ScrollViewer>
+        </GroupBox>
+        <DataGrid ItemsSource="{Binding}" Padding="1" RowHeaderWidth="0" Name="main_table_datagrid" Height="412" HorizontalAlignment="Center" VerticalAlignment="Top" Width="789" Margin="0,54,0,0" Grid.RowSpan="2" Background="#FF393939" Foreground="White" RowBackground="#FF393939" AlternatingRowBackground="#FF292929" HorizontalGridLinesBrush="#FF4D4D4D" VerticalGridLinesBrush="#FF4D4D4D" BorderBrush="{x:Null}" IsReadOnly="True">
+            <DataGrid.Resources>
+                <Style BasedOn="{StaticResource {x:Type DataGridColumnHeader}}" TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter Property="Background" Value="#FF292929" />
+                </Style>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Audio Hash" HeaderStringFormat="Audio Hash"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+    </Grid>
+</Window>

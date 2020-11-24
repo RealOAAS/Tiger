@@ -34,6 +34,7 @@ namespace Tiger
 
         private Dictionary<uint, string> string_lookup_table_holder;
         private List<Dictionary<uint, string>> investment_globals_strings_holder;
+        private Dictionary<uint, string> client_startup_strings_holder;
 
         /// <summary>
         /// The main constructor to the extractor class
@@ -96,11 +97,15 @@ namespace Tiger
         /// <summary>
         /// A method used to return the master packages as an IEnumerable to allow iteration over packages
         /// </summary>
+        /// <param name="specific_package">A part of a string to find in packages. Example, if this 
+        /// arguemnt is set to 'audio' then only packages with the name audio will be returned
+        /// </param>
         /// <returns>A generator or an IEnumerable of Package objects</returns>
-        public IEnumerable<Package> master_packages_stream()
+        public IEnumerable<Package> master_packages_stream(string specific_package=null)
         {
             foreach (KeyValuePair<uint, List<Package>> id_package_pair in packages_id_lookup_table)
-                yield return id_package_pair.Value[^1];
+                if(specific_package == null || id_package_pair.Value[^1].name.Contains(specific_package))
+                    yield return id_package_pair.Value[^1];
         }
 
         /// <summary>
@@ -361,6 +366,35 @@ namespace Tiger
             Logger.log("String lookup table initialization completed", LoggerLevels.HighVerbouse);
             string_lookup_table_holder = strings_dict;
             return strings_dict;
+        }
+
+        /// <summary>
+        /// A method used to get the strings in the client startup packages and then return 
+        /// it if they're already initialized
+        /// </summary>
+        /// <returns>A dictionary of hash and string corresponding to this hash</returns>
+        public Dictionary<uint, string> client_statup_strings()
+        {
+            if (client_startup_strings_holder != null)
+                return client_startup_strings_holder;
+
+            Dictionary<uint, string> temp_holder = new Dictionary<uint, string>();
+            foreach(Package package in master_packages_stream("client_startup"))
+            {
+                for(int i=0; i<package.entry_table().Count;i++)
+                {
+                    if (package.entry_table()[i].entry_a != (uint)Blocks.Type.StringReference)
+                        continue;
+
+                    byte[] dictionary_blob = new Parsers.StringReferenceParser(package, i, this).Parse().data;
+                    Dictionary<uint, string> package_strings_dict = Newtonsoft.Json.JsonConvert.DeserializeObject<Dictionary<uint, string>>(System.Text.Encoding.UTF8.GetString(dictionary_blob));
+                    foreach (KeyValuePair<uint, string> hash_string_pair in package_strings_dict)
+                        temp_holder[hash_string_pair.Key] = hash_string_pair.Value;
+                }
+            }
+
+            client_startup_strings_holder = temp_holder;
+            return temp_holder;
         }
 
         /// <summary>

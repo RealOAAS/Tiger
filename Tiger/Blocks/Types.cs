@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Tiger.Blocks
 {
-    enum Type : uint
+    public enum Type : uint
     {
         //A string bank is a file that contains the strings in an encrypted format. The
         //File does not make any other references or anything. It just contains the 
