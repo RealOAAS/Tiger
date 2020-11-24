@@ -10,11 +10,12 @@
   "profiles": {
     "TigerViewer": {
       "commandName": "Project",
+      "commandLineArgs": "--trace-deprecation",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:26170;http://localhost:43440",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
-      }
+      },
+      "applicationUrl": "https://localhost:26170;http://localhost:43440"
     },
     "IIS Express": {
       "commandName": "IISExpress",
