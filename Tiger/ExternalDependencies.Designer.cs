@@ -63,6 +63,16 @@ namespace Tiger {
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
+        internal static byte[] AudioConverter {
+            get {
+                object obj = ResourceManager.GetObject("AudioConverter", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
         internal static byte[] librevorb {
             get {
                 object obj = ResourceManager.GetObject("librevorb", resourceCulture);

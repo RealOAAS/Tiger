@@ -1,10 +1,11 @@
 ﻿using System;
 using System.IO;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Reflection;
+using System.IO.Compression;
+using System.Threading.Tasks;
 using System.Runtime.Versioning;
+using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Runtime.InteropServices;
 
@@ -45,7 +46,7 @@ namespace Tiger
             this.PackagesPath = packages_path;
 
             //Check if the depenedencies are present, and if they're not all present, then extract them
-            List<string> dependencies = new List<string>() {"oo2core_8_win64.dll", "RawtexCmd.exe", "texconv.exe", "packed_codebooks.bin", "packed_codebooks_aoTuV_603.bin", "librevorb.dll" };
+            List<string> dependencies = new List<string>() {"oo2core_8_win64.dll", "RawtexCmd.exe", "texconv.exe", "packed_codebooks.bin", "packed_codebooks_aoTuV_603.bin", "librevorb.dll", "AudioConverter.zip" };
             foreach (string dependency in dependencies)
             {
                 string filepath = Path.Join(Directory.GetCurrentDirectory(), dependency);
@@ -58,6 +59,12 @@ namespace Tiger
 
                     Stream file_stream = Assembly.GetExecutingAssembly().GetManifestResourceStream($"Tiger.Resources.{dependency}");
                     File.WriteAllBytes(filepath, new BinaryReader(file_stream).ReadBytes((int)file_stream.Length));
+
+                    if (dependency.Split(".")[^1] == "zip")
+                    {
+                        Logger.log($"Extracting data in: {dependency}", LoggerLevels.MediumVerbouse);
+                        ZipFile.ExtractToDirectory(dependency, ".");
+                    }
                 }
             }
         }

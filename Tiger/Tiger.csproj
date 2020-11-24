@@ -6,6 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\AudioConverter.zip" />
     <None Remove="Resources\librevorb.dll" />
     <None Remove="Resources\oo2core_8_win64.dll" />
     <None Remove="Resources\packed_codebooks.bin" />
@@ -15,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\AudioConverter.zip" />
     <EmbeddedResource Include="Resources\librevorb.dll" />
     <EmbeddedResource Include="Resources\oo2core_8_win64.dll" />
     <EmbeddedResource Include="Resources\packed_codebooks.bin" />
@@ -54,5 +56,13 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ExternalDependencies.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\Omar\.nuget\packages\7z.net\1.0.3\build\7za.exe" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="C:\Users\Omar\.nuget\packages\7z.net\1.0.3\build\7za.exe" />
   </ItemGroup>
 </Project>
