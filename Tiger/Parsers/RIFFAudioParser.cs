@@ -38,8 +38,8 @@ namespace Tiger.Parsers
             this.extractor = extractor;
             this.entry_index = (uint)entry_index;
 
-            if (entry.type != 26 || entry.subtype != 7)
-                throw new Tiger.Parsers.InvalidTypeError($"Expected a RIFF file of the entry type 26 and subtype 7. Instead, recieved an entry of type {entry.type} and subtype {entry.subtype}");
+            if (entry.type != (int)Entries.Types.ThirdParty || entry.subtype != (int)Entries.Subtypes.ThirdParty.RIFF)
+                throw new Tiger.Parsers.InvalidTypeError($"Expected a RIFF file of the entry type {(int)Entries.Types.ThirdParty} and subtype {(int)Entries.Subtypes.ThirdParty.RIFF}. Instead, recieved an entry of type {entry.type} and subtype {entry.subtype}");
         }
 
         /// <summary>

@@ -66,8 +66,8 @@ namespace Tiger.Parsers
             this.extractor = extractor;
             this.entry_index = (uint)entry_index;
 
-            if (entry.type != 27 || entry.subtype != 1)
-                throw new Tiger.Parsers.InvalidTypeError($"Expected a USM file of the entry type 27 and subtype 1. Instead, recieved an entry of type {entry.type} and subtype {entry.subtype}");
+            if (entry.type != (int)Entries.Types.Video || entry.subtype != (int)Entries.Subtypes.Video.USM)
+                throw new Tiger.Parsers.InvalidTypeError($"Expected a USM file of the entry type {(int)Entries.Types.Video} and subtype {(int)Entries.Subtypes.Video.USM}. Instead, recieved an entry of type {entry.type} and subtype {entry.subtype}");
         }
 
         /// <summary>

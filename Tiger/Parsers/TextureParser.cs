@@ -70,8 +70,8 @@ namespace Tiger.Parsers
             }
             else
             {
-                Logger.log($"Expected entry of type 32, 40, or 48 and subtype 1. Instead, obtained entry of type {temporary_entry.type} and subtype {temporary_entry.subtype}", LoggerLevels.HighVerbouse);
-                throw new Tiger.Parsers.InvalidTypeError($"Expected entry of type 32, 40, or 48 and subtype 1. Instead, obtained entry of type {temporary_entry.type} and subtype {temporary_entry.subtype}");
+                Logger.log($"Expected entry of type {(int)Entries.Types.TextureHeader}, {(int)Entries.Types.TextureData}, or {(int)Entries.Types.TextureUIData} and subtype {(int)Entries.Subtypes.Texture.DDS}. Instead, obtained entry of type {temporary_entry.type} and subtype {temporary_entry.subtype}", LoggerLevels.HighVerbouse);
+                throw new Tiger.Parsers.InvalidTypeError($"Expected entry of type {(int)Entries.Types.TextureHeader}, {(int)Entries.Types.TextureData}, or {(int)Entries.Types.TextureUIData} and subtype {(int)Entries.Subtypes.Texture.DDS}. Instead, obtained entry of type {temporary_entry.type} and subtype {temporary_entry.subtype}");
             }
         }
 
