@@ -14,7 +14,7 @@ namespace Tiger.Parsers
     /// type 26 and subtype 7. The first four bytes in a RIFF file is a
     /// magic or header number of 'RIFF'.
     /// </summary>
-    class RIFFAudioParser
+    public class RIFFAudioParser
     {
         public Package package { get; private set; }
         public Formats.Entry entry { get; private set; }

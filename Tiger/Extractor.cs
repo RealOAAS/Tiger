@@ -138,13 +138,16 @@ namespace Tiger
                 if (!package_lookup_temp.ContainsKey(package_name_no_patch_id))
                     package_lookup_temp[package_name_no_patch_id] = new List<Package>();
 
+                Package package = new Package(packages_path, package_name);
+
                 package_lookup_temp[package_name_no_patch_id].Add(new Package(packages_path, package_name));
             }
 
             //Sorting the packages inside the dictionary in order of the patch_id, so that its [0, 1, 2, .....] so the 
             //packages are ordered in ascending order.
             foreach(KeyValuePair<string, List<Package>> dictionary_entry in package_lookup_temp)
-                dictionary_entry.Value.Sort((x, y) => x.patch_id.CompareTo(y.patch_id)); 
+                dictionary_entry.Value.Sort((x, y) => x.patch_id.CompareTo(y.patch_id));
+
 
             return package_lookup_temp;
         }

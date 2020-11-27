@@ -219,8 +219,8 @@ struct SPkgBlock_80809733 {
     uint32_t string_hash1;      //The hash of the string foudn in the string localizer 1
     uint64_t padding3;          //Padding. But soemtimes contains some values
 
-    ReferenceHash audio_ref1;   //A reference to a file of the block type 8080.... that contains a reference to the RIFF file
-    uint32_t number_of_audios1; //The numbr of audio files contained in the above mentioned file
+    ReferenceHash audio_ref2;   //A reference to a file of the block type 8080.... that contains a reference to the RIFF file
+    uint32_t number_of_audios2; //The numbr of audio files contained in the above mentioned file
     uint64_t padding4;          //padding
 
     ReferenceHash string_localizer2;//A hash that points to the first string localizer that maps to the first stirng hash

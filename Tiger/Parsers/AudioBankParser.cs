@@ -79,7 +79,7 @@ namespace Tiger.Parsers
             byte[] audio_bank_data = extractor.extract_entry_data(package, (int)entry_index).data;
 
             Dictionary<UInt64, UInt64> hashes_index_dict = new Dictionary<ulong, ulong>();
-            Dictionary<uint, Dictionary<string, string>> parsed_audio_bank = new Dictionary<uint, Dictionary<string, string>>();
+            Dictionary<UInt64, Dictionary<string, string>> parsed_audio_bank = new Dictionary<UInt64, Dictionary<string, string>>();
 
             using (MemoryStream mem_stream = new MemoryStream(audio_bank_data))
             {
@@ -101,7 +101,14 @@ namespace Tiger.Parsers
                         }
                         catch
                         {
-                            narrator_name = "unknown";
+                            if(extractor.string_lookup_table().ContainsKey(audio_entry.narrator_string_hash))
+                            {
+                                narrator_name = extractor.string_lookup_table()[audio_entry.narrator_string_hash];
+                                if (narrator_name.Length >= 30)
+                                    narrator_name = "unknown";
+                            }
+                            else
+                                narrator_name = "unknown";
                         }
 
                         if(narrator_name.Length > 20)
@@ -145,7 +152,6 @@ namespace Tiger.Parsers
                                 {"transcript string", transcript },
                                 {"audio hash", audio_entry.audio_hash.ToString() },
                                 {"audio reference hash", audio_reference.entry_a.ToString() },
-                                {"conversation hash", audio_entry.conversation_hash.ToString() },
                                 {"audio ogg data", audio_ogg_data_base64 },
                             };
                     }
@@ -211,8 +217,7 @@ namespace Tiger.Parsers
                 {
                     using(BinaryReader bin_reader = new BinaryReader(mem_stream))
                     {
-                        audio_entry.audio_hash = bin_reader.ReadUInt32();
-                        audio_entry.conversation_hash = bin_reader.ReadUInt32();
+                        audio_entry.audio_hash = bin_reader.ReadUInt64();
 
                         mem_stream.Seek(0x10, SeekOrigin.Current);
                         audio_entry.audio_reference_1 = new Tiger.Utils.EntryReference(bin_reader.ReadUInt32());
@@ -244,7 +249,7 @@ namespace Tiger.Parsers
             /// </summary>
             public class AudioBankEntry
             {
-                public uint audio_hash { get; set; }
+                public UInt64 audio_hash { get; set; }
                 public uint conversation_hash { get; set; }
                 public uint narrator_string_hash { get; set; }
 
